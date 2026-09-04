@@ -1,1199 +1,849 @@
-DEALER --- AI Commerce Arena
+# 🤝 DEALER — AI Commerce Arena
 
-AI proposes. Deterministic systems decide.
+> **AI-powered commerce negotiation with deterministic business governance.**
 
+🚧 **ONGOING PROJECT — Active Development**
 
+DEALER is an AI-driven commerce negotiation platform where **Buyer and Merchant AI agents negotiate deals**, while a **deterministic business-rule layer** controls what actions are actually allowed.
 
+The goal is to explore a future where autonomous AI agents can participate in commerce without giving AI direct authority over business rules, deal states, or financial transactions.
 
+---
 
+## 💡 What is DEALER?
 
+Traditional e-commerce usually follows:
 
-DEALER --- AI Commerce Arena is an AI-driven commerce negotiation
-platform where autonomous Buyer and Merchant agents negotiate deals
-while deterministic business rules, policy validation, state machines,
-and payment services control what can actually happen.
-
-The project explores a simple but important question:
-
-What happens when AI agents participate in commerce, but AI itself
-is never given authority over business rules or money movement?
-
-DEALER answers that question by separating AI decision-making from
-deterministic execution.
-
-Live Demo
-
-Production: https://dealer-ai-commerce-arena.vercel.app/
-
-Repository: https://github.com/ajrocks-afk/Dealer-ai-commerce-arena
-
-What is DEALER?
-
-Traditional e-commerce generally follows:
-
+```text
 Browse → Buy → Pay
+```
 
 DEALER explores a more dynamic model:
 
+```text
 Buyer Agent
      ↕
-Negotiate
+Negotiation
      ↕
 Merchant Agent
      ↓
+Validate
+     ↓
+Accept
+     ↓
+Pay
+```
+
+Instead of simply selecting a fixed price, a buyer can negotiate with a merchant through AI agents.
+
+However, the AI does **not** get unrestricted control.
+
+The core principle of DEALER is:
+
+> **AI can negotiate. Deterministic code decides what is allowed.**
+
+This separation creates a safer architecture for agentic commerce.
+
+---
+
+# 🎯 Core Idea
+
+DEALER combines two different layers:
+
+### 🧠 AI Layer
+
+AI agents are responsible for tasks such as:
+
+* Understanding the buyer's intent
+* Understanding product information
+* Generating offers
+* Counter-offering
+* Evaluating negotiation context
+* Communicating with the other agent
+* Reaching a potential agreement
+
+### 🛡️ Governance Layer
+
+Deterministic application logic is responsible for:
+
+* Validating offers
+* Enforcing business rules
+* Controlling negotiation state
+* Determining whether an action is permitted
+* Preventing invalid transitions
+* Protecting transaction logic
+* Ensuring AI cannot bypass application constraints
+
+This gives DEALER a clear separation between:
+
+```text
+AI Decision Making
+        ↓
+Proposal
+        ↓
 Deterministic Validation
-     ↓
-Business Policy
-     ↓
-State Machine
-     ↓
-Payment Service
-     ↓
-Razorpay
+        ↓
+Allowed / Rejected
+```
 
-The Buyer and Merchant agents can reason about offers and propose
-actions.
+The AI can **suggest** an action.
 
-They do not have direct authority to:
+The system decides whether that action is **legal**.
 
-bypass business rules
+---
 
-bypass price limits
+# 🏗️ Architecture
 
-change deal state arbitrarily
+The high-level architecture of DEALER is:
 
-mark a deal as accepted without validation
+```text
+┌──────────────────────────────┐
+│      Commerce Arena UI       │
+│                              │
+│  Buyer ↔ Merchant Negotiation│
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│       Next.js APIs           │
+│                              │
+│  Request / Response Layer    │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│     Negotiation Layer        │
+│                              │
+│   Buyer Agent ↔ Merchant     │
+│            Agent             │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│   Deterministic Governance   │
+│                              │
+│  Business Rules              │
+│  Offer Validation            │
+│  Deal State                   │
+│  Action Authorization        │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│      Transaction Layer       │
+│                              │
+│    Accept → Pay → Complete   │
+└──────────────────────────────┘
+```
 
-directly move money
+---
 
-execute payments outside the payment service
+# 🔄 How DEALER Works
 
-This creates a controlled environment for experimenting with autonomous
-commerce.
+A typical negotiation follows this flow:
 
-Core Principle
+```text
+1. Buyer selects a product
+          ↓
+2. Buyer Agent evaluates the product
+          ↓
+3. Buyer Agent proposes an offer
+          ↓
+4. Merchant Agent evaluates the offer
+          ↓
+5. Merchant Agent accepts / rejects / counter-offers
+          ↓
+6. Negotiation continues
+          ↓
+7. Proposed deal reaches validation
+          ↓
+8. Deterministic rules validate the deal
+          ↓
+9. Deal is accepted or rejected
+          ↓
+10. Transaction can proceed
+```
 
-The central architecture of DEALER is:
+The important part is step 7–8.
 
-AI PROPOSES
-     ↓
-DETERMINISTIC VALIDATION
-     ↓
-BUSINESS POLICY DECIDES
-     ↓
-STATE MACHINE CONTROLS EXECUTION
-     ↓
-PAYMENT SERVICE CONTROLS PAYMENT FLOW
-     ↓
-RAZORPAY EXECUTES MONEY MOVEMENT
+Even if an AI agent proposes something unreasonable or invalid, the deterministic layer remains the final authority.
 
-The most important boundary is:
+---
 
-AI ≠ AUTHORITY
+# 🧠 Agentic Negotiation
 
-AI can recommend an action.
+DEALER treats the buyer and merchant as separate participants.
 
-Deterministic systems decide whether that action is allowed.
+## 👤 Buyer Agent
 
-Why This Architecture Matters
-
-Giving an AI agent unrestricted access to commerce operations creates
-obvious risks.
-
-An AI model could theoretically:
-
-propose an invalid price
-
-ignore a merchant's minimum price
-
-accept an offer outside the allowed state
-
-modify a transaction state incorrectly
-
-attempt to trigger payment directly
-
-DEALER deliberately prevents this architecture.
-
-Instead:
-
-Gemini
-  ↓
-Decision
-  ↓
-Application Validation
-  ↓
-Business Policy
-  ↓
-State Machine
-  ↓
-Payment Service
-
-Each layer has a specific responsibility.
-
-System Architecture
-
-┌─────────────────────────────────────────────┐
-│              COMMERCE ARENA                │
-│                                             │
-│        Buyer Agent ↔ Merchant Agent         │
-│                                             │
-└──────────────────────┬──────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────┐
-│             NEXT.JS API LAYER               │
-│                                             │
-│     Deal / Negotiation / Decision APIs      │
-└──────────────────────┬──────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────┐
-│              AI NEGOTIATION                 │
-│                                             │
-│              Google Gemini                  │
-│                                             │
-│      Proposes decisions and offer prices    │
-└──────────────────────┬──────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────┐
-│          DETERMINISTIC GOVERNANCE           │
-│                                             │
-│   Business Policy + Validation + Rules      │
-└──────────────────────┬──────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────┐
-│               STATE MACHINE                 │
-│                                             │
-│ CREATED → NEGOTIATING → POLICY_CHECK       │
-│                  ↓                          │
-│       OFFER / COUNTER / ACCEPT / REJECT     │
-└──────────────────────┬──────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────┐
-│              PAYMENT SERVICE                │
-│                                             │
-│        Payment order / execution            │
-│                                             │
-└──────────────────────┬──────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────┐
-│                 RAZORPAY                   │
-│                                             │
-│             Money movement                  │
-└─────────────────────────────────────────────┘
-
-Buyer Agent
-
-The Buyer Agent represents the customer side of the negotiation.
+The Buyer Agent represents the buyer's interests.
 
 It can:
 
-analyze the current deal
+* Analyze the product
+* Consider the current offer
+* Make an offer
+* Respond to merchant counter-offers
+* Decide whether to continue negotiating
+* Attempt to reach the buyer's desired deal
 
-evaluate merchant proposals
+## 🏪 Merchant Agent
 
-generate negotiation decisions
-
-propose a counter-offer
-
-accept a suitable offer
-
-stop negotiation when necessary
-
-The Buyer Agent's AI output is treated as a proposal, not as an
-authoritative transaction command.
-
-Merchant Agent
-
-The Merchant Agent represents the seller side.
+The Merchant Agent represents the merchant.
 
 It can:
 
-evaluate buyer proposals
+* Evaluate incoming offers
+* Consider product pricing
+* Respond to buyer proposals
+* Make counter-offers
+* Accept or reject negotiations
+* Attempt to protect the merchant's pricing constraints
 
-reason about acceptable prices
+The agents communicate through the negotiation system rather than directly modifying business state.
 
-respond with offers
+---
 
-accept suitable buyer proposals
+# 🛡️ Deterministic Governance
 
-reject unsuitable proposals
-
-participate in autonomous negotiation
-
-The Merchant Agent is also constrained by deterministic business rules.
-
-Gemini AI Negotiation
-
-DEALER integrates Gemini for autonomous negotiation.
-
-The Gemini decision layer produces structured decisions such as:
-
-agent
-decision
-offerPrice
-quantity
-reasoning
-
-Example:
-
-Agent: BUYER
-Decision: MAKE_OFFER
-Offer Price: ₹112000
-Reasoning:
-Proposing an opening offer based on the negotiation context.
-
-The returned AI decision is then passed through deterministic
-validation.
-
-The application can adjust or reject an AI proposal when business rules
-require it.
-
-This distinction is intentional.
-
-AI Proposal vs Authoritative Price
-
-DEALER separates:
-
-Gemini Proposal
-
-from:
-
-Authoritative Deal Price
-
-The Gemini output is the AI's recommendation.
-
-The Deal Core price is the validated value accepted by the deterministic
-system.
-
-Therefore:
-
-Gemini Offer
-     ↓
-Validation
-     ↓
-Business Policy
-     ↓
-Authoritative Price
-
-This prevents an AI-generated value from automatically becoming the
-final commercial truth.
-
-Negotiation Flow
-
-A typical autonomous negotiation follows this process:
-
-1. Deal Created
-        ↓
-2. Buyer and Merchant Context Loaded
-        ↓
-3. Gemini Generates Decisions
-        ↓
-4. AI Proposals Are Returned
-        ↓
-5. Deterministic Validation Runs
-        ↓
-6. Business Policy Is Evaluated
-        ↓
-7. State Machine Validates Transition
-        ↓
-8. Authoritative Deal State Is Updated
-        ↓
-9. Negotiation Continues or Deal Is Accepted
-        ↓
-10. Payment Service Handles Payment Flow
-        ↓
-11. Razorpay Executes Money Movement
-
-Deal Core
-
-The Deal Core is the authoritative center of a negotiation session.
-
-It exposes information such as:
-
-current authoritative price
-
-current negotiation round
-
-maximum rounds
-
-current state
-
-latest validated offer
-
-control events
-
-negotiation progress
-
-The Deal Core is intentionally separate from the raw Gemini output.
-
-That allows the UI to communicate two different concepts:
-
-WHAT AI PROPOSED
-
-and:
-
-WHAT THE SYSTEM ACTUALLY ACCEPTED
-
-Deal State Machine
-
-DEALER uses a deterministic state machine to control deal execution.
-
-Example states include:
-
-CREATED
-NEGOTIATING
-POLICY_CHECK
-OFFER_RECEIVED
-COUNTERED
-ACCEPTED
-REJECTED
-CANCELLED
-EXPIRED
-
-A simplified flow:
-
-CREATED
-   ↓
-NEGOTIATING
-   ↓
-POLICY_CHECK
-   ├── ACCEPTED
-   ├── REJECTED
-   ├── COUNTERED
-   ├── NEGOTIATING
-   ├── CANCELLED
-   └── EXPIRED
-
-The state machine prevents arbitrary state changes.
+One of the most important design decisions in DEALER is that **AI does not own the business rules**.
 
 For example:
 
-AI says: ACCEPT
+```text
+AI:
+"I want to accept this offer."
 
-does not mean:
+        ↓
 
-Deal automatically becomes ACCEPTED
+Governance Layer:
+"Is this offer actually allowed?"
 
-Instead:
+        ↓
 
-AI decision
-    ↓
-Allowed transition?
-    ↓
-Business policy valid?
-    ↓
-State transition permitted?
-    ↓
-Update authoritative state
+YES → Continue
+NO  → Reject
+```
 
-Deterministic Business Policy
+This protects the system from relying on an LLM as the final authority for rules that should be deterministic.
 
-Business rules are deterministic.
+### Why this matters
 
-Examples include:
+An LLM can:
 
-minimum merchant selling price
+* Misinterpret instructions
+* Produce inconsistent outputs
+* Generate unexpected actions
+* Attempt actions outside the intended workflow
 
-allowed offer ranges
+A deterministic rules engine can instead provide predictable enforcement.
 
-negotiation round limits
+Therefore:
 
-quantity constraints
+```text
+LLM = Negotiation Intelligence
 
-deal expiration
+Code = Business Authority
+```
 
-accepted/rejected states
+---
 
-payment eligibility
+# 🔐 AI Does NOT Control Transactions
 
-The AI cannot override these rules.
+DEALER intentionally avoids giving the AI unrestricted authority over financial or business-critical operations.
 
-This is a core design principle of the project.
+The AI may propose:
 
-Price Authority
+```text
+"Accept ₹X"
+```
 
-DEALER intentionally distinguishes between several price concepts.
+But the system determines whether that action is permitted.
 
-AI Proposed Price
+The architecture therefore follows:
 
-The value generated by Gemini.
+```text
+AI Proposal
+     ↓
+Application Validation
+     ↓
+Business Rule Check
+     ↓
+State Transition
+     ↓
+Transaction
+```
 
-Gemini → offerPrice
+This creates an important boundary between **reasoning** and **execution**.
 
-Validated Offer
+---
 
-The value after application-level validation and business policy.
+# 🧩 Technology Stack
 
-AI proposal
-    ↓
-Validation
-    ↓
-Validated offer
+DEALER is currently being developed using:
 
-Authoritative Deal Price
+| Layer                     | Technology                    |
+| ------------------------- | ----------------------------- |
+| Frontend                  | Next.js / React               |
+| Backend                   | Next.js API routes            |
+| Language                  | TypeScript                    |
+| Runtime / Package Manager | Node.js / npm                 |
+| AI                        | LLM API integration           |
+| Testing                   | Vitest                        |
+| Configuration             | Environment variables         |
+| Development               | Local development environment |
 
-The final value stored in the deal session after deterministic controls.
+The project is structured to keep the AI negotiation logic and deterministic application logic clearly separated.
 
-Deal Core → currentPrice
+---
 
-This separation is important because an AI model can propose a value
-that the deterministic system does not allow to become authoritative.
+# 📁 Project Structure
 
-Manual Control
+The project follows a Next.js / TypeScript structure.
 
-DEALER also supports controlled manual interaction.
+A simplified view:
 
-The Deal Page allows the operator to:
-
-enter a manual offer
-
-submit a counter
-
-accept a deal
-
-stop negotiation
-
-synchronize state
-
-trigger Gemini negotiation
-
-Manual input still passes through the same deterministic governance
-layer.
-
-The UI does not directly bypass the backend rules.
-
-Commerce Arena UI
-
-The primary interface is a dark, futuristic AI commerce arena built
-around live negotiation.
-
-The landing page presents:
-
-DEALER
-AI COMMERCE ARENA
-
-SYSTEM ONLINE
-
-AUTONOMOUS COMMERCE / CONTROLLED EXECUTION
-
-COMMERCE, NEGOTIATED.
-
-DEALER is an AI commerce arena where buyer and merchant agents
-negotiate — while deterministic systems decide what can actually happen.
-
-CREATE DEAL
-EXPLORE SYSTEM
-
-The Deal Page presents the negotiation as three central panels:
-
-┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
-│   BUYER AGENT    │  │    DEAL CORE     │  │ MERCHANT AGENT   │
-│                  │  │                  │  │                  │
-│ Gemini proposal  │  │ Authoritative    │  │ Gemini proposal  │
-│ Gemini action    │  │ price            │  │ Gemini action    │
-│ Reasoning        │  │ Round / State    │  │ Reasoning        │
-│ Manual input     │  │ Progress         │  │ Manual input     │
-│ Counter / Accept │  │ Control events   │  │ Counter / Accept │
-└──────────────────┘  └──────────────────┘  └──────────────────┘
-
-The interface is designed to make the separation between AI reasoning
-and deterministic authority visible.
-
-Live Gemini Negotiation
-
-Before Gemini negotiation is started, the agent proposal cards show:
-
-₹0
-
-This prevents the UI from pretending that an AI proposal exists before
-Gemini has actually returned one.
-
-When:
-
-RUN GEMINI NEGOTIATION
-
-is pressed, the application calls the existing autonomous negotiation
-API.
-
-The page then displays the actual returned Gemini decision:
-
-decision.offerPrice
-decision.decision
-decision.reasoning
-
-No hardcoded negotiation result is used.
-
-The Deal Core separately displays:
-
-session.currentPrice
-
-as the authoritative validated price.
-
-Payment Architecture
-
-Payment execution is intentionally isolated from AI.
-
-The architecture is:
-
-AI
- ↓
-Negotiation
- ↓
-Validation
- ↓
-Policy
- ↓
-State Machine
- ↓
-Payment Service
- ↓
-Razorpay
-
-The AI does not receive direct access to payment credentials or money
-movement.
-
-Razorpay credentials remain server-side environment variables.
-
-Payment Safety
-
-Payment configuration errors are not treated as AI decisions.
-
-The backend is responsible for checking required payment credentials.
-
-If Razorpay credentials are unavailable, the UI should communicate a
-safe status such as:
-
-Payment execution is pending configuration.
-
-It should not falsely report that money was transferred.
-
-The backend payment validation remains intact even when the UI presents
-a cleaner status message.
-
-Security Model
-
-DEALER follows a basic authority hierarchy:
-
-AI OUTPUT
-   ↓
-UNTRUSTED PROPOSAL
-   ↓
-DETERMINISTIC VALIDATION
-   ↓
-BUSINESS POLICY
-   ↓
-STATE MACHINE
-   ↓
-AUTHORIZED ACTION
-
-The system therefore treats AI output as data that must be validated.
-
-This is safer than giving an AI agent direct access to critical business
-operations.
-
-Observability
-
-DEALER records and exposes negotiation information useful for
-understanding what happened during a deal.
-
-Useful events include:
-
-Gemini decision generated
-Offer initiated
-Policy check
-State transition
-Counter offer
-Acceptance
-Payment preparation
-Payment execution
-
-State transitions are deterministic and can be inspected during
-development.
-
-Example:
-
-[STATE MACHINE]
-CREATED → NEGOTIATING
-
-[STATE MACHINE]
-NEGOTIATING → POLICY_CHECK
-
-[STATE MACHINE]
-POLICY_CHECK → ACCEPTED
-
-This makes autonomous behavior auditable rather than opaque.
-
-Example Negotiation
-
-Suppose the merchant's minimum legal selling price is:
-
-₹112000
-
-and the initial asking price is:
-
-₹140000
-
-Gemini may propose:
-
-₹112000
-
-The deterministic system can then validate the proposal against the
-active negotiation policy.
-
-The final authoritative Deal Core value may therefore differ from the
-raw AI proposal.
-
-This is not a bug in the architecture.
-
-It demonstrates the architecture:
-
-Gemini proposes
-      ↓
-System validates
-      ↓
-Policy decides
-      ↓
-Deal Core becomes authoritative
-
-Technology Stack
-
-Frontend
-
-Next.js
-
-React
-
-TypeScript
-
-Tailwind CSS
-
-Custom glass/neon UI styling
-
-Backend
-
-Next.js API routes
-
-TypeScript services
-
-Deterministic business rules
-
-Deal state machine
-
-Negotiation services
-
-Payment service
-
-AI
-
-Google Gemini
-
-Structured AI negotiation decisions
-
-Payments
-
-Razorpay
-
-Deployment
-
-Vercel
-
-Development
-
-Node.js
-
-npm
-
-Git
-
-GitHub
-
-Project Structure
-
-The project is organized around UI, API, services, governance, state
-management, payments, and tests.
-
-DEALER- AI Commerce Arena/
-│
-├── .dealer/
-│   └── ...
-│
-├── public/
-│   └── ...
-│
-├── scripts/
-│   └── ...
+```text
+DEALER/
 │
 ├── src/
 │   ├── app/
 │   │   ├── api/
-│   │   │   ├── deals/
 │   │   │   └── ...
 │   │   │
-│   │   ├── deals/
-│   │   │   └── [dealId]/
-│   │   │       ├── page.tsx
-│   │   │       └── ...
-│   │   │
-│   │   ├── layout.tsx
-│   │   └── page.tsx
+│   │   └── ...
 │   │
-│   ├── services/
-│   │   ├── dealer-api.ts
-│   │   ├── gemini-service.ts
-│   │   ├── ...
+│   ├── ...
 │   │
 │   └── ...
 │
-├── tests/
-│   └── ...
-│
-├── BRAIN.md
-├── README.md
-├── .env.example
-├── .gitignore
+├── .env.local
 ├── package.json
 ├── tsconfig.json
-└── ...
+├── ...
+└── README.md
+```
 
-Important Backend Contracts
+> The exact folder structure may continue to evolve while DEALER is under active development.
 
-The deal session contains authoritative information including:
+---
 
-id
-productId
-merchantId
-buyerId
-state
-currentRound
-maxRounds
-currency
-initialPrice
-currentPrice
-createdAt
-updatedAt
-expiresAt
+# 🔑 Environment Configuration
 
-The autonomous negotiation response can contain:
+DEALER uses environment variables for sensitive configuration such as API credentials.
 
-session
-offers
-decisions
-errors
+Create a local environment file:
 
-A decision contains information such as:
-
-agent
-decision
-offerPrice
-quantity
-reasoning
-
-The frontend uses the existing API contracts rather than inventing
-additional backend fields.
-
-Environment Variables
-
-Create a local .env.local file.
-
-Example:
-
-GEMINI_API_KEY=your_gemini_api_key
-
-RAZORPAY_KEY_ID=your_razorpay_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_key_secret
-
-For Vercel, configure the same variables in the project's Environment
-Variables section.
-
-Important
-
-Never commit:
-
+```text
 .env.local
+```
 
-Never put secret credentials directly into:
+Add the required AI API key:
 
-GitHub source code
+```env
+YOUR_AI_API_KEY=your_api_key_here
+```
 
-README files
+### ⚠️ Important
 
-frontend code
+Never commit secret API keys to GitHub.
 
-screenshots
+Make sure environment files containing secrets are excluded through `.gitignore`.
 
-client-side JavaScript
+For example:
 
-Use .env.example for documenting variable names without exposing real
-values.
+```gitignore
+.env
+.env.local
+.env.*.local
+```
 
-Local Development
+The actual environment-variable name should match the one used by the application code.
+
+---
+
+# 🤖 AI Integration
+
+The AI integration allows DEALER to move beyond a traditional fixed-price shopping experience.
+
+Instead of simply:
+
+```text
+Product → Price → Purchase
+```
+
+DEALER enables:
+
+```text
+Product
+   ↓
+Buyer Agent
+   ↓
+Offer
+   ↓
+Merchant Agent
+   ↓
+Counter Offer
+   ↓
+Negotiation
+   ↓
+Validation
+   ↓
+Deal
+```
+
+The AI API is used for the **intelligence layer**, while application code remains responsible for enforcing system constraints.
+
+---
+
+# 🧪 Testing
+
+DEALER uses **Vitest** for automated testing.
+
+Tests can be executed using:
+
+```bash
+npm test
+```
+
+The project has already been tested during development while resolving implementation and integration issues.
+
+Testing is an important part of the project because negotiation systems can have many edge cases.
+
+Examples include:
+
+* Invalid offers
+* Invalid deal states
+* Unexpected agent responses
+* Boundary conditions
+* Rejected negotiations
+* Invalid state transitions
+* API failures
+
+---
+
+# 🧱 Development Philosophy
+
+DEALER is built around a simple architectural principle:
+
+## **Don't let the AI become the source of truth.**
+
+The AI should be powerful enough to negotiate but constrained enough that it cannot directly redefine the rules of the marketplace.
+
+This creates a layered system:
+
+```text
+┌─────────────────────────────┐
+│          AI Layer           │
+│                             │
+│ Reasoning + Negotiation     │
+└──────────────┬──────────────┘
+               │
+               │ Proposal
+               ▼
+┌─────────────────────────────┐
+│      Governance Layer       │
+│                             │
+│ Deterministic Rules         │
+│ Validation + State          │
+└──────────────┬──────────────┘
+               │
+               │ Authorized Action
+               ▼
+┌─────────────────────────────┐
+│       Transaction Layer     │
+│                             │
+│ Business-Critical Actions   │
+└─────────────────────────────┘
+```
+
+---
+
+# 🧠 Why Deterministic Governance?
+
+A normal AI-powered application might look like:
+
+```text
+User
+ ↓
+LLM
+ ↓
+Action
+```
+
+DEALER intentionally moves toward:
+
+```text
+User
+ ↓
+AI
+ ↓
+Proposal
+ ↓
+Rules
+ ↓
+Validation
+ ↓
+Action
+```
+
+This distinction becomes increasingly important as AI agents gain the ability to perform real-world actions.
+
+The system should not assume:
+
+> "The AI said it, therefore it is allowed."
+
+Instead:
+
+> "The AI proposed it. Now the system checks whether it is allowed."
+
+---
+
+# 💼 Commerce Use Case
+
+Imagine a product listed at:
+
+```text
+₹50,000
+```
+
+A buyer's agent might propose:
+
+```text
+₹40,000
+```
+
+The merchant agent could respond:
+
+```text
+₹47,000
+```
+
+The buyer agent could counter:
+
+```text
+₹44,000
+```
+
+The merchant could respond again:
+
+```text
+₹45,000
+```
+
+Eventually:
+
+```text
+Buyer Agent
+     ↓
+₹45,000
+     ↓
+Merchant Agent
+     ↓
+Agreement
+     ↓
+Governance Validation
+     ↓
+Approved
+     ↓
+Transaction
+```
+
+The important point is that the negotiation can be flexible while the final authorization remains deterministic.
+
+---
+
+# 🔄 Negotiation State
+
+A negotiation is treated as a controlled process rather than an unlimited conversation.
+
+Conceptually:
+
+```text
+START
+  ↓
+NEGOTIATING
+  ↓
+ ┌───────────────┐
+ │               │
+ ▼               ▼
+ACCEPTED       REJECTED
+  │
+  ▼
+VALIDATED
+  │
+  ▼
+TRANSACTION
+```
+
+The application controls which transitions are valid.
+
+This prevents an AI agent from simply jumping from an arbitrary conversational state directly into a transaction.
+
+---
+
+# 🚧 Current Project Status
+
+DEALER is currently an:
+
+> **ONGOING PROJECT — Active Development**
+
+Work completed so far includes the core project foundation and continued implementation/debugging of the AI commerce negotiation system.
+
+The development process has included:
+
+* Project setup
+* Next.js / TypeScript application development
+* API/backend structure
+* AI API configuration
+* Environment-variable setup
+* Negotiation architecture
+* Buyer / merchant agent concept
+* Deterministic governance concept
+* Testing with Vitest
+* Debugging and resolving implementation issues
+* Continued refinement of the project architecture
+
+The project is intentionally being built incrementally so that the AI layer does not become tightly coupled to the business-rule layer.
+
+---
+
+# 🧪 Running the Project Locally
 
 Clone the repository:
 
-git clone https://github.com/ajrocks-afk/Dealer-ai-commerce-arena.git
+```bash
+git clone <YOUR_REPOSITORY_URL>
+```
 
 Enter the project:
 
-cd "Dealer-ai-commerce-arena"
+```bash
+cd DEALER
+```
 
 Install dependencies:
 
+```bash
 npm install
+```
 
-Create the local environment file:
+Create your local environment file:
 
-copy .env.example .env.local
+```text
+.env.local
+```
 
-Add the required credentials to .env.local.
+Add the required API configuration.
 
-Start the development server:
+Then start the development server:
 
+```bash
 npm run dev
+```
 
-Open:
+Open the local application in your browser.
 
-http://localhost:3000
+---
 
-Production Build
+# 🧪 Run Tests
 
-Before deployment, verify the project with:
+Run the test suite with:
 
-npm run build
+```bash
+npm test
+```
 
-A successful build confirms that the application can be compiled for
-production.
+For a watch-based development workflow, use the appropriate Vitest command configured by the project.
 
-Vercel Deployment
+---
 
-DEALER is deployed using Vercel.
+# 🛠️ Development Workflow
 
-Recommended configuration:
+A typical development cycle is:
 
-Framework:
-Next.js
+```text
+Build Feature
+     ↓
+Run TypeScript / Build Checks
+     ↓
+Run Tests
+     ↓
+Fix Errors
+     ↓
+Test Again
+     ↓
+Integrate AI
+     ↓
+Validate Governance
+     ↓
+Repeat
+```
 
-Root Directory:
-./
+DEALER is being developed incrementally rather than treating the LLM as the entire application.
 
-Build Command:
-Next.js default
+---
 
-Install Command:
-npm install
+# 🎯 Design Goals
 
-Add the required environment variables in Vercel:
+The project aims to demonstrate several ideas:
 
-GEMINI_API_KEY
-RAZORPAY_KEY_ID
-RAZORPAY_KEY_SECRET
+### 1. Agentic Commerce
 
-Then deploy.
+AI agents can negotiate on behalf of users and businesses.
 
-Git Workflow
+### 2. Controlled Autonomy
 
-The project is maintained using Git.
+Agents can make decisions within a constrained environment.
 
-Typical workflow:
+### 3. Deterministic Governance
 
-git status
-git add -A
-git commit -m "Update DEALER"
-git push origin main
+Business rules remain enforceable by traditional application code.
 
-The production repository is:
+### 4. Separation of Concerns
 
-https://github.com/ajrocks-afk/Dealer-ai-commerce-arena
+AI reasoning and transaction authorization remain separate.
 
-Testing Strategy
+### 5. Safe Agent Execution
 
-The project should be tested at multiple layers.
+AI-generated proposals should not automatically become real-world actions.
 
-AI Layer
+### 6. Extensible Architecture
 
-Verify:
+The system can evolve toward more sophisticated negotiation strategies without replacing the underlying governance model.
 
-Gemini is configured
+---
 
-Gemini returns structured decisions
+# 🚀 Future Direction
 
-offer prices are returned correctly
+DEALER is designed as an evolving platform.
 
-reasoning is returned
+Potential future development areas include:
 
-invalid AI output is handled safely
+* More sophisticated buyer negotiation strategies
+* More sophisticated merchant strategies
+* Persistent negotiation sessions
+* Richer product catalogs
+* Advanced pricing rules
+* Negotiation limits
+* Deal expiration
+* Audit logs
+* Stronger transaction-state management
+* Improved frontend visualization
+* More comprehensive automated tests
+* Agent evaluation and benchmarking
+* Multi-product negotiations
+* Personalized buyer constraints
+* Merchant inventory constraints
+* More advanced governance policies
 
-Governance Layer
+These features can be added while preserving the fundamental architecture:
 
-Verify:
+```text
+AI proposes
+     ↓
+Rules validate
+     ↓
+System executes
+```
 
-business rules cannot be bypassed
+---
 
-invalid prices are rejected or adjusted
+# 🔬 The Experiment
 
-allowed actions are enforced
+DEALER is more than an e-commerce UI.
 
-AI output cannot directly execute restricted operations
+It is an exploration of a larger question:
 
-State Machine
+> **What happens when AI agents become participants in commerce?**
 
-Verify:
+If an AI agent can negotiate prices, choose products, and interact with another autonomous agent, then traditional assumptions about e-commerce begin to change.
 
-valid state transitions succeed
+Instead of:
 
-invalid transitions are rejected
+```text
+Human → Website → Checkout
+```
 
-accepted deals enter the correct state
+we can imagine:
 
-cancelled and expired deals cannot continue incorrectly
-
-Payment Layer
-
-Verify:
-
-payment credentials are checked server-side
-
-payment orders are created through the payment service
-
-AI cannot directly execute money movement
-
-Razorpay receives only authorized payment requests
-
-UI Layer
-
-Verify:
-
-Gemini results are displayed from live API responses
-
-authoritative price is displayed separately
-
-agent cards show actual decisions
-
-manual actions work
-
-state synchronization works
-
-Design Principles
-
-DEALER is built around several principles.
-
-1. AI should propose, not govern
-
-AI is useful for reasoning and negotiation.
-
-It should not own critical business authority.
-
-2. Deterministic rules should remain deterministic
-
-Business policies should not depend on probabilistic model behavior.
-
-3. State transitions should be explicit
-
-Every important deal state change should be controlled.
-
-4. Payment should be isolated
-
-AI should never directly control money movement.
-
-5. The UI should expose authority boundaries
-
-The interface should make it clear what the AI proposed and what the
-system actually accepted.
-
-6. Autonomous does not mean uncontrolled
-
-The goal is not unrestricted autonomy.
-
-The goal is:
-
-Autonomy inside deterministic boundaries.
-
-Project Objective
-
-The objective of DEALER is to demonstrate a practical architecture for
-autonomous commerce where AI agents can negotiate while deterministic
-systems retain final control.
-
-The project combines:
-
-Agentic AI
-+
+```text
+Human
+  ↓
+Buyer Agent
+  ↕
+Merchant Agent
+  ↓
+Governance
+  ↓
 Commerce
-+
-Negotiation
-+
-Business Policy
-+
-State Machines
-+
-Payment Infrastructure
+```
 
-without collapsing all of those responsibilities into the AI model.
+The challenge is ensuring that increased autonomy does not mean uncontrolled authority.
 
-What Makes DEALER Different?
+DEALER explores one possible answer:
 
-A conventional AI commerce prototype might look like:
+> **Give AI the ability to reason and negotiate, but keep authority deterministic.**
 
-User
- ↓
-AI
- ↓
-Transaction
+---
 
-DEALER instead uses:
+# 🏆 Project Vision
 
-User
- ↓
-AI Agents
- ↓
-Negotiation
- ↓
-Deterministic Governance
- ↓
-State Machine
- ↓
-Payment Service
- ↓
-Transaction
+The long-term vision for DEALER is an **AI Commerce Arena** where autonomous agents can negotiate meaningful commercial agreements while remaining inside clearly defined and enforceable boundaries.
 
-That extra control layer is the core of the project.
+The system should make it possible to have:
 
-Demo Flow
+```text
+🤖 Intelligent Negotiation
+        +
+🛡️ Deterministic Governance
+        +
+💳 Controlled Transactions
+        =
+🤝 Agentic Commerce
+```
 
-A recommended demonstration flow is:
+---
 
-1. Open the landing page
-2. Show SYSTEM ONLINE
-3. Explain the AI Commerce Arena
-4. Create or open a deal
-5. Show Buyer Agent
-6. Show Deal Core
-7. Show Merchant Agent
-8. Show that AI proposal values begin at ₹0
-9. Press RUN GEMINI NEGOTIATION
-10. Show the live Gemini decision
-11. Show Gemini reasoning
-12. Show deterministic validation
-13. Show authoritative Deal Core price
-14. Show state machine transition
-15. Show business policy/governance
-16. Show payment architecture
-17. Explain Razorpay execution boundary
-18. Finish with the accepted deal
+# 📌 Key Principle
 
-Suggested Presentation Message
+## AI is the negotiator — not the authority.
 
-The project can be summarized in one sentence:
+That principle sits at the heart of DEALER.
 
-DEALER lets AI agents negotiate commerce while deterministic systems
-retain authority over rules, state, and money.
+The agents can:
 
-Or even shorter:
+> **Think → Propose → Negotiate**
 
-AI proposes. Deterministic systems decide.
+But the system must:
 
-Project Vision
+> **Validate → Authorize → Execute**
 
-The longer-term vision is to explore how autonomous agents could
-participate in real-world commerce without requiring the AI model itself
-to become the final authority over financial or business-critical
-actions.
+---
 
-Possible future directions include:
+# 👨‍💻 Project Status
 
-multi-product negotiation
+**DEALER — AI Commerce Arena**
 
-multiple merchant agents
+🚧 **Active Development**
 
-agent reputation
+The project is being built iteratively, with a strong focus on:
 
-richer negotiation strategies
+* AI agent negotiation
+* Deterministic business governance
+* Reliable state management
+* API architecture
+* Testing
+* Safe execution of AI-generated proposals
 
-inventory-aware negotiation
+---
 
-dynamic business policies
+## ⭐ If you find the idea interesting
 
-audit trails
+DEALER is an exploration of what commerce could look like when AI agents become active participants rather than simple assistants.
 
-human approval workflows
+The core question is simple:
 
-multi-agent marketplaces
+> **Can autonomous AI agents negotiate commerce without being allowed to control the rules of commerce?**
 
-stronger payment authorization boundaries
-
-These are future directions rather than requirements of the current
-implementation.
-
-Current Status
-
-ONGOING PROJECT --- Active Development
-
-Current implementation demonstrates:
-
-AI-powered negotiation
-
-Buyer and Merchant agents
-
-Gemini integration
-
-live autonomous negotiation
-
-deterministic price validation
-
-business policy enforcement
-
-deal state machine
-
-manual negotiation controls
-
-Deal Core authority
-
-payment service architecture
-
-Razorpay integration boundary
-
-Next.js application
-
-Vercel deployment
-
-GitHub source control
-
-Final Principle
-
-DEALER is not about giving AI complete control over commerce.
-
-It is about demonstrating the opposite:
-
-AI can reason.
-AI can negotiate.
-AI can propose.
-
-But deterministic systems decide
-what is actually allowed to happen.
-
-And for payments:
-
-AI
- ↓
-PROPOSE
- ↓
-VALIDATE
- ↓
-AUTHORIZE
- ↓
-PAYMENT SERVICE
- ↓
-RAZORPAY
- ↓
-MONEY MOVEMENT
-
-The AI participates in the commerce --- but it does not own the
-commerce.
-
-DEALER --- AI Commerce Arena
-
-AI proposes. Deterministic systems decide.
+DEALER is an attempt to build that answer.
