@@ -1,0 +1,3631 @@
+@import "tailwindcss";
+
+:root {
+  /* =========================================================
+     DEALER — Core Visual System
+     ========================================================= */
+
+  --dealer-bg: #0a0a0b;
+  --dealer-surface: #111214;
+  --dealer-elevated: #181a1f;
+  --dealer-border: #2a2d33;
+
+  /* Brand */
+  --dealer-gold: #f5a623;
+
+  /* Agents */
+  --buyer: #3b82f6;
+  --buyer-active: #1d4ed8;
+
+  --merchant: #8b5cf6;
+  --merchant-active: #6d28d9;
+
+  /* System */
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #f59e0b;
+
+  /* Typography */
+  --text-primary: #f5f5f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+
+  /* Glass */
+  --glass-surface: rgba(17, 18, 20, 0.72);
+  --glass-surface-strong: rgba(24, 26, 31, 0.84);
+  --glass-border: rgba(255, 255, 255, 0.07);
+  --glass-border-hover: rgba(255, 255, 255, 0.12);
+
+  /* Radius */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  /* Shadows */
+  --shadow-panel: 0 12px 40px rgba(0, 0, 0, 0.28);
+  --shadow-panel-hover: 0 18px 50px rgba(0, 0, 0, 0.38);
+  --shadow-gold: 0 0 28px rgba(245, 166, 35, 0.12);
+
+  /* Motion */
+  --motion-fast: 160ms;
+  --motion-normal: 240ms;
+  --motion-slow: 420ms;
+
+  color-scheme: dark;
+}
+
+/* =========================================================
+   Base
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--dealer-bg);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+
+  background:
+    radial-gradient(
+      circle at 50% -10%,
+      rgba(245, 166, 35, 0.035),
+      transparent 34%
+    ),
+    var(--dealer-bg);
+
+  color: var(--text-primary);
+  font-family: var(--font-inter), Inter, sans-serif;
+
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+::selection {
+  background: rgba(245, 166, 35, 0.25);
+  color: #ffffff;
+}
+
+/* =========================================================
+   Typography
+   ========================================================= */
+
+.dealer-mono {
+  font-family: var(--font-mono), "JetBrains Mono", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================
+   Ambient Background
+   ========================================================= */
+
+.dealer-ambient {
+  position: relative;
+  isolation: isolate;
+}
+
+.dealer-ambient::before,
+.dealer-ambient::after {
+  position: absolute;
+  z-index: -1;
+
+  pointer-events: none;
+  content: "";
+
+  border-radius: 999px;
+  filter: blur(90px);
+}
+
+.dealer-ambient::before {
+  top: -180px;
+  left: 12%;
+
+  width: 360px;
+  height: 360px;
+
+  background: rgba(245, 166, 35, 0.035);
+}
+
+.dealer-ambient::after {
+  top: 12%;
+  right: 8%;
+
+  width: 300px;
+  height: 300px;
+
+  background: rgba(59, 130, 246, 0.025);
+}
+
+/* =========================================================
+   Grid
+   ========================================================= */
+
+.dealer-grid {
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px
+    );
+
+  background-size: 32px 32px;
+}
+
+/* =========================================================
+   Traditional Panels
+   ========================================================= */
+
+.dealer-panel {
+  background: var(--dealer-surface);
+  border: 1px solid var(--dealer-border);
+  border-radius: var(--radius-lg);
+}
+
+.dealer-panel-elevated {
+  background: var(--dealer-elevated);
+  border: 1px solid var(--dealer-border);
+  border-radius: var(--radius-lg);
+}
+
+/* =========================================================
+   Glass System
+   ========================================================= */
+
+.dealer-glass {
+  background: var(--glass-surface);
+
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+
+  box-shadow: var(--shadow-panel);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.dealer-glass-hover {
+  transition:
+    transform var(--motion-normal) ease,
+    border-color var(--motion-normal) ease,
+    background var(--motion-normal) ease,
+    box-shadow var(--motion-normal) ease;
+}
+
+.dealer-glass-hover:hover {
+  background: rgba(24, 26, 31, 0.78);
+
+  border-color: var(--glass-border-hover);
+
+  box-shadow: var(--shadow-panel-hover);
+
+  transform: translateY(-2px);
+}
+
+.dealer-glass-strong {
+  background: var(--glass-surface-strong);
+
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+
+  box-shadow: var(--shadow-panel);
+
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* =========================================================
+   Brand / Status Effects
+   ========================================================= */
+
+.dealer-gold-glow {
+  box-shadow: var(--shadow-gold);
+}
+
+.dealer-live-dot {
+  animation: dealer-pulse 1.8s ease-in-out infinite;
+}
+
+.dealer-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.dealer-shimmer::after {
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+  content: "";
+
+  background:
+    linear-gradient(
+      110deg,
+      transparent 35%,
+      rgba(255, 255, 255, 0.045) 50%,
+      transparent 65%
+    );
+
+  transform: translateX(-120%);
+
+  animation: dealer-shimmer 2.8s ease-in-out infinite;
+}
+
+/* =========================================================
+   Interactive Elements
+   ========================================================= */
+
+.dealer-interactive {
+  transition:
+    transform var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    background var(--motion-fast) ease,
+    box-shadow var(--motion-fast) ease;
+}
+
+.dealer-interactive:hover {
+  border-color: var(--glass-border-hover);
+}
+
+.dealer-interactive:active {
+  transform: scale(0.985);
+}
+
+.dealer-focus:focus-visible,
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid rgba(245, 166, 35, 0.75);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   Entrance Motion
+   ========================================================= */
+
+.dealer-fade-up {
+  animation: dealer-fade-up var(--motion-slow) ease both;
+}
+
+.dealer-scale-in {
+  animation: dealer-scale-in var(--motion-slow) ease both;
+}
+
+.dealer-fade-in {
+  animation: dealer-fade-in var(--motion-normal) ease both;
+}
+
+/* Staggered UI */
+
+.dealer-delay-1 {
+  animation-delay: 60ms;
+}
+
+.dealer-delay-2 {
+  animation-delay: 120ms;
+}
+
+.dealer-delay-3 {
+  animation-delay: 180ms;
+}
+
+.dealer-delay-4 {
+  animation-delay: 240ms;
+}
+
+/* =========================================================
+   Agent Activity
+   ========================================================= */
+
+.dealer-agent-thinking {
+  position: relative;
+}
+
+.dealer-agent-thinking::after {
+  width: 6px;
+  height: 6px;
+
+  margin-left: 7px;
+
+  display: inline-block;
+
+  content: "";
+  vertical-align: middle;
+
+  border-radius: 999px;
+
+  background: currentColor;
+
+  animation: dealer-thinking 1.2s ease-in-out infinite;
+}
+
+/* =========================================================
+   Scrollbars
+   ========================================================= */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* =========================================================
+   Keyframes
+   ========================================================= */
+
+@keyframes dealer-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.35;
+    transform: scale(0.86);
+  }
+}
+
+@keyframes dealer-shimmer {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  55%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes dealer-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dealer-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.975);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes dealer-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dealer-thinking {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+}
+
+/* =========================================================
+   Accessibility
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .dealer-glass,
+  .dealer-glass-strong,
+  .dealer-panel,
+  .dealer-panel-elevated {
+    border-radius: var(--radius-md);
+  }
+
+  .dealer-ambient::before {
+    left: -80px;
+  }
+
+  .dealer-ambient::after {
+    right: -100px;
+  }
+}
+/* =========================================================
+   DEALER — Application Shell
+   ========================================================= */
+
+.dealer-app {
+  min-height: 100vh;
+  width: 100%;
+  background: var(--dealer-bg);
+}
+
+.dealer-shell {
+  width: min(100% - 48px, 1440px);
+  margin: 0 auto;
+}
+
+.dealer-main {
+  min-height: calc(100vh - 64px);
+  padding: 36px 0 48px;
+}
+
+.dealer-page-title {
+  font-size: clamp(34px, 4vw, 56px);
+  line-height: 0.98;
+  font-weight: 700;
+  letter-spacing: -0.045em;
+}
+
+.dealer-page-subtitle {
+  max-width: 680px;
+  margin-top: 16px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.dealer-section {
+  margin-top: 32px;
+}
+
+.dealer-card {
+  min-height: 100%;
+}
+
+.dealer-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(320px, 0.8fr);
+  gap: 16px;
+}
+
+.dealer-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.dealer-arena-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(240px, 1fr)
+    minmax(280px, 1.15fr)
+    minmax(240px, 1fr);
+  gap: 12px;
+}
+
+.dealer-full-height {
+  min-height: 620px;
+}
+
+@media (max-width: 1100px) {
+  .dealer-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dealer-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dealer-arena-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .dealer-shell {
+    width: min(100% - 28px, 1440px);
+  }
+
+  .dealer-main {
+    padding-top: 24px;
+  }
+
+  .dealer-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dealer-page-title {
+    font-size: 36px;
+  }
+}
+
+/* =========================================================
+   DEALER — Immersive Commerce Landing Experience
+   ========================================================= */
+
+.dealer-home {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(
+      circle at 50% 15%,
+      rgba(245, 166, 35, 0.055),
+      transparent 27%
+    ),
+    radial-gradient(
+      circle at 18% 38%,
+      rgba(77, 114, 255, 0.045),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 82% 65%,
+      rgba(159, 92, 255, 0.04),
+      transparent 25%
+    ),
+    #070708;
+}
+
+/* =========================================================
+   Navigation
+   ========================================================= */
+
+.dealer-home-nav {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 100;
+  height: 72px;
+
+  border-bottom: 1px solid
+    rgba(255, 255, 255, 0.055);
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(7, 7, 8, 0.94),
+      rgba(7, 7, 8, 0.72)
+    );
+
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.dealer-home-nav-inner {
+  width: min(
+    calc(100% - 48px),
+    1380px
+  );
+
+  height: 100%;
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dealer-brand-button {
+  border: 0;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  background: transparent;
+  color: white;
+}
+
+.dealer-brand-mark {
+  width: 31px;
+  height: 31px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid
+    rgba(245, 166, 35, 0.35);
+
+  border-radius: 9px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(245, 166, 35, 0.16),
+      rgba(245, 166, 35, 0.025)
+    );
+
+  color: #f5a623;
+
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+
+  box-shadow:
+    0 0 26px
+      rgba(245, 166, 35, 0.07);
+}
+
+.dealer-brand-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+}
+
+.dealer-brand-copy span {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.19em;
+}
+
+.dealer-brand-copy small {
+  margin-top: 4px;
+
+  color: #55565d;
+
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.dealer-home-nav-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #505158;
+
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.dealer-status-dot {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 999px;
+
+  background: #35363b;
+
+  transition:
+    background 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.dealer-status-online {
+  background: #37d879;
+
+  box-shadow:
+    0 0 12px
+      rgba(55, 216, 121, 0.65);
+}
+
+.dealer-nav-divider {
+  width: 1px;
+  height: 12px;
+
+  margin: 0 6px;
+
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* =========================================================
+   Story
+   ========================================================= */
+
+.dealer-story {
+  position: relative;
+
+  min-height: 100svh;
+
+  padding:
+    110px 24px 50px;
+
+  overflow: hidden;
+}
+
+.dealer-story-noise {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  opacity: 0.16;
+
+  background-image:
+    radial-gradient(
+      rgba(255, 255, 255, 0.12)
+        0.6px,
+      transparent 0.6px
+    );
+
+  background-size: 7px 7px;
+
+  mask-image:
+    linear-gradient(
+      to bottom,
+      black,
+      transparent 78%
+    );
+}
+
+.dealer-story-content {
+  position: relative;
+
+  width: min(
+    100%,
+    1380px
+  );
+
+  min-height:
+    calc(100svh - 160px);
+
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.dealer-story-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  color: #4e5057;
+
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.dealer-story-live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dealer-story-live > span {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 999px;
+
+  background: #f5a623;
+
+  box-shadow:
+    0 0 12px
+      rgba(245, 166, 35, 0.6);
+
+  animation:
+    dealer-story-live-pulse
+    1.8s
+    ease-in-out
+    infinite;
+}
+
+.dealer-story-count {
+  color: #414248;
+}
+
+/* =========================================================
+   Stage
+   ========================================================= */
+
+.dealer-story-stage {
+  position: relative;
+
+  width: min(
+    100%,
+    760px
+  );
+
+  aspect-ratio: 1 / 0.75;
+
+  margin:
+    5px
+    auto
+    -20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    transform 650ms
+      cubic-bezier(
+        0.16,
+        1,
+        0.3,
+        1
+      );
+}
+
+.dealer-story-stage-spin {
+  transform:
+    scale(0.965)
+    rotate(5deg);
+}
+
+/* =========================================================
+   Orbits
+   ========================================================= */
+
+.dealer-orbit {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.065);
+
+  border-radius: 999px;
+
+  transform:
+    translate(-50%, -50%);
+}
+
+.dealer-orbit-one {
+  width: 43%;
+  aspect-ratio: 1;
+
+  animation:
+    dealer-orbit-rotate
+    34s
+    linear
+    infinite;
+}
+
+.dealer-orbit-two {
+  width: 62%;
+  aspect-ratio: 1;
+
+  border-color:
+    rgba(245, 166, 35, 0.085);
+
+  animation:
+    dealer-orbit-rotate-reverse
+    48s
+    linear
+    infinite;
+}
+
+.dealer-orbit-three {
+  width: 79%;
+  aspect-ratio: 1;
+
+  border-style: dashed;
+  border-color:
+    rgba(255, 255, 255, 0.045);
+
+  animation:
+    dealer-orbit-rotate
+    64s
+    linear
+    infinite;
+}
+
+.dealer-orbit-line {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 39%;
+
+  height: 1px;
+
+  transform-origin: left center;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(245, 166, 35, 0.2),
+      transparent
+    );
+
+  opacity: 0.4;
+}
+
+.dealer-orbit-line-a {
+  transform:
+    translateY(-50%)
+    rotate(-28deg);
+}
+
+.dealer-orbit-line-b {
+  transform:
+    translateY(-50%)
+    rotate(36deg);
+}
+
+.dealer-orbit-line-c {
+  transform:
+    translateY(-50%)
+    rotate(154deg);
+}
+
+/* =========================================================
+   Satellites
+   ========================================================= */
+
+.dealer-satellite {
+  position: absolute;
+
+  min-width: 86px;
+
+  padding: 8px 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.08);
+
+  border-radius: 999px;
+
+  background:
+    rgba(13, 13, 15, 0.78);
+
+  color: #686970;
+
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  transition:
+    color 240ms ease,
+    border-color 240ms ease,
+    background 240ms ease,
+    transform 300ms ease,
+    box-shadow 300ms ease;
+
+  animation:
+    dealer-satellite-float
+    5s
+    ease-in-out
+    infinite;
+}
+
+.dealer-satellite svg {
+  color: #f5a623;
+  opacity: 0.72;
+}
+
+.dealer-satellite:hover,
+.dealer-satellite-active {
+  color: #ffffff;
+
+  border-color:
+    rgba(245, 166, 35, 0.35);
+
+  background:
+    rgba(245, 166, 35, 0.07);
+
+  box-shadow:
+    0 0 32px
+      rgba(245, 166, 35, 0.08);
+
+  transform: translateY(-3px);
+}
+
+.dealer-satellite-left {
+  left: 7%;
+  top: 38%;
+}
+
+.dealer-satellite-top {
+  left: 50%;
+  top: 4%;
+
+  transform:
+    translateX(-50%);
+
+  animation-delay: -1.1s;
+}
+
+.dealer-satellite-right {
+  right: 6%;
+  top: 37%;
+
+  animation-delay: -2.2s;
+}
+
+.dealer-satellite-bottom-right {
+  right: 15%;
+  bottom: 12%;
+
+  animation-delay: -3.1s;
+}
+
+.dealer-satellite-bottom-left {
+  left: 16%;
+  bottom: 10%;
+
+  animation-delay: -4.2s;
+}
+
+.dealer-satellite-far-left {
+  left: 1%;
+  top: 17%;
+
+  animation-delay: -2.7s;
+}
+
+/* =========================================================
+   Central DEALER object
+   ========================================================= */
+
+.dealer-core {
+  position: relative;
+
+  width: 285px;
+  aspect-ratio: 1;
+
+  border: 0;
+
+  background: transparent;
+
+  color: white;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  z-index: 10;
+}
+
+.dealer-core-halo {
+  position: absolute;
+
+  width: 76%;
+  aspect-ratio: 1;
+
+  border-radius: 999px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(245, 166, 35, 0.14),
+      rgba(245, 166, 35, 0.025) 42%,
+      transparent 70%
+    );
+
+  filter: blur(8px);
+
+  animation:
+    dealer-core-breathe
+    4.5s
+    ease-in-out
+    infinite;
+}
+
+.dealer-core-ring {
+  position: absolute;
+
+  border-radius: 999px;
+
+  pointer-events: none;
+
+  transition:
+    transform 900ms
+      cubic-bezier(
+        0.16,
+        1,
+        0.3,
+        1
+      );
+}
+
+.dealer-core-ring-outer {
+  inset: 3%;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.08);
+
+  border-left-color:
+    rgba(245, 166, 35, 0.62);
+
+  border-bottom-color:
+    rgba(245, 166, 35, 0.25);
+
+  box-shadow:
+    inset 0 0 30px
+      rgba(245, 166, 35, 0.025),
+    0 0 35px
+      rgba(245, 166, 35, 0.025);
+
+  animation:
+    dealer-core-rotate
+    22s
+    linear
+    infinite;
+}
+
+.dealer-core-ring-middle {
+  inset: 13%;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.055);
+
+  border-right-color:
+    rgba(245, 166, 35, 0.45);
+
+  animation:
+    dealer-core-rotate-reverse
+    16s
+    linear
+    infinite;
+}
+
+.dealer-core-ring-inner {
+  inset: 25%;
+
+  border: 1px solid
+    rgba(245, 166, 35, 0.18);
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(245, 166, 35, 0.06),
+      rgba(10, 10, 11, 0.55)
+    );
+
+  box-shadow:
+    0 0 55px
+      rgba(245, 166, 35, 0.06);
+}
+
+.dealer-core:hover
+  .dealer-core-ring-outer {
+  transform:
+    rotate(45deg)
+    scale(1.035);
+}
+
+.dealer-core:hover
+  .dealer-core-ring-middle {
+  transform:
+    rotate(-70deg)
+    scale(1.02);
+}
+
+.dealer-core:hover
+  .dealer-core-ring-inner {
+  transform: scale(0.97);
+}
+
+.dealer-core-star {
+  position: relative;
+  z-index: 2;
+
+  margin-bottom: 7px;
+
+  color: #f5a623;
+
+  font-size: 23px;
+
+  text-shadow:
+    0 0 24px
+      rgba(245, 166, 35, 0.65);
+
+  animation:
+    dealer-star-pulse
+    3s
+    ease-in-out
+    infinite;
+}
+
+.dealer-core-word {
+  position: relative;
+  z-index: 2;
+
+  font-size: 31px;
+  font-weight: 300;
+
+  letter-spacing:
+    0.15em;
+
+  text-indent:
+    0.15em;
+}
+
+.dealer-core-subtitle {
+  position: relative;
+  z-index: 2;
+
+  margin-top: 7px;
+
+  color: #65666d;
+
+  font-size: 6px;
+  font-weight: 800;
+
+  letter-spacing:
+    0.25em;
+
+  text-indent:
+    0.25em;
+}
+
+.dealer-core-action {
+  position: relative;
+  z-index: 2;
+
+  margin-top: 18px;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #b0b1b6;
+
+  font-size: 7px;
+  font-weight: 900;
+
+  letter-spacing:
+    0.16em;
+
+  transition:
+    color 200ms ease,
+    gap 200ms ease;
+}
+
+.dealer-core:hover
+  .dealer-core-action {
+  color: #f5a623;
+  gap: 11px;
+}
+
+/* =========================================================
+   Story copy
+   ========================================================= */
+
+.dealer-story-message {
+  position: relative;
+
+  min-height: 205px;
+
+  display: flex;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.dealer-story-copy {
+  width: min(
+    100%,
+    660px
+  );
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dealer-story-copy-enter {
+  animation:
+    dealer-copy-enter
+    620ms
+    cubic-bezier(
+      0.16,
+      1,
+      0.3,
+      1
+    )
+    both;
+}
+
+.dealer-feature-eyebrow {
+  color: #f5a623;
+
+  font-size: 7px;
+  font-weight: 900;
+
+  letter-spacing:
+    0.2em;
+}
+
+.dealer-story-copy h1 {
+  margin:
+    12px
+    0
+    0;
+
+  font-size:
+    clamp(
+      38px,
+      5vw,
+      65px
+    );
+
+  line-height: 0.95;
+
+  font-weight: 400;
+
+  letter-spacing:
+    -0.055em;
+}
+
+.dealer-story-copy h1 em,
+.dealer-philosophy h2 em {
+  color: #777980;
+  font-style: normal;
+}
+
+.dealer-story-copy p {
+  max-width: 570px;
+
+  margin:
+    20px
+    0
+    0;
+
+  color: #73747b;
+
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.dealer-feature-detail {
+  margin-top: 17px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #4f5057;
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing:
+    0.04em;
+}
+
+.dealer-feature-detail > span {
+  width: 22px;
+  height: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid
+    rgba(245, 166, 35, 0.15);
+
+  border-radius: 50%;
+
+  color: #f5a623;
+
+  background:
+    rgba(245, 166, 35, 0.04);
+}
+
+.dealer-story-start {
+  margin-top: 23px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border: 1px solid
+    rgba(245, 166, 35, 0.22);
+
+  border-radius: 999px;
+
+  padding:
+    10px
+    15px;
+
+  background:
+    rgba(245, 166, 35, 0.035);
+
+  color: #d5d5d8;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing:
+    0.11em;
+
+  transition:
+    background 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease,
+    transform 200ms ease;
+}
+
+.dealer-story-start:hover {
+  background:
+    rgba(245, 166, 35, 0.08);
+
+  border-color:
+    rgba(245, 166, 35, 0.42);
+
+  color: #f5a623;
+
+  transform:
+    translateY(-2px);
+}
+
+/* =========================================================
+   Progress
+   ========================================================= */
+
+.dealer-story-progress {
+  width: min(
+    300px,
+    60%
+  );
+
+  margin:
+    5px
+    auto
+    0;
+
+  display: grid;
+  grid-template-columns:
+    repeat(6, 1fr);
+
+  gap: 5px;
+}
+
+.dealer-story-progress button {
+  height: 2px;
+
+  border: 0;
+
+  padding: 0;
+
+  background:
+    rgba(255, 255, 255, 0.08);
+
+  transition:
+    background 400ms ease,
+    transform 400ms ease;
+}
+
+.dealer-story-progress button:hover {
+  transform: scaleY(2);
+}
+
+.dealer-story-progress
+  .dealer-progress-active {
+  background: #f5a623;
+
+  box-shadow:
+    0 0 10px
+      rgba(245, 166, 35, 0.35);
+}
+
+/* =========================================================
+   Arena Entry
+   ========================================================= */
+
+.dealer-entry-section {
+  position: relative;
+
+  border-top: 1px solid
+    rgba(255, 255, 255, 0.06);
+
+  background:
+    radial-gradient(
+      circle at 18% 50%,
+      rgba(245, 166, 35, 0.055),
+      transparent 28%
+    );
+
+  padding:
+    130px 24px
+    110px;
+
+  scroll-margin-top: 70px;
+}
+
+.dealer-entry-inner {
+  width: min(
+    1180px,
+    100%
+  );
+
+  margin: 0 auto;
+}
+
+.dealer-entry-heading > span {
+  color: #f5a623;
+
+  font-size: 7px;
+  font-weight: 900;
+
+  letter-spacing:
+    0.2em;
+}
+
+.dealer-entry-heading h2 {
+  margin:
+    14px
+    0
+    0;
+
+  font-size:
+    clamp(
+      42px,
+      6vw,
+      76px
+    );
+
+  line-height: 0.91;
+
+  font-weight: 400;
+
+  letter-spacing:
+    -0.055em;
+}
+
+.dealer-entry-heading p {
+  max-width: 510px;
+
+  margin-top: 20px;
+
+  color: #696a71;
+
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.dealer-entry-layout {
+  margin-top: 60px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.1fr)
+    minmax(0, 0.9fr);
+
+  gap: 15px;
+}
+
+.dealer-entry-form,
+.dealer-live-deals {
+  border: 1px solid
+    rgba(255, 255, 255, 0.07);
+
+  border-radius: 24px;
+
+  background:
+    rgba(15, 15, 17, 0.72);
+
+  box-shadow:
+    0 25px 80px
+      rgba(0, 0, 0, 0.2);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.dealer-entry-form {
+  padding: 28px;
+}
+
+.dealer-entry-form-top,
+.dealer-live-deals-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.dealer-entry-form-top > div > span,
+.dealer-live-deals-heading > div > span {
+  color: #55565d;
+
+  font-size: 7px;
+  font-weight: 900;
+
+  letter-spacing:
+    0.18em;
+}
+
+.dealer-entry-form-top h3,
+.dealer-live-deals-heading h3 {
+  margin-top: 7px;
+
+  font-size: 19px;
+  font-weight: 500;
+
+  letter-spacing:
+    -0.025em;
+}
+
+.dealer-entry-form-top > svg {
+  color: #f5a623;
+}
+
+.dealer-form-grid {
+  margin-top: 28px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 13px;
+}
+
+.dealer-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dealer-form-grid label > span {
+  color: #56575e;
+
+  font-size: 7px;
+  font-weight: 900;
+
+  letter-spacing:
+    0.16em;
+}
+
+.dealer-form-grid input {
+  width: 100%;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.07);
+
+  border-radius: 11px;
+
+  padding:
+    11px
+    12px;
+
+  outline: 0;
+
+  background:
+    rgba(255, 255, 255, 0.025);
+
+  color: #e9e9eb;
+
+  font-size: 11px;
+
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.dealer-form-grid input:focus {
+  border-color:
+    rgba(245, 166, 35, 0.35);
+
+  background:
+    rgba(245, 166, 35, 0.025);
+
+  box-shadow:
+    0 0 0 3px
+      rgba(245, 166, 35, 0.035);
+}
+
+.dealer-form-error {
+  margin-top: 15px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  border: 1px solid
+    rgba(239, 68, 68, 0.18);
+
+  border-radius: 11px;
+
+  padding:
+    10px
+    12px;
+
+  color: #ef7777;
+
+  background:
+    rgba(239, 68, 68, 0.035);
+
+  font-size: 9px;
+}
+
+.dealer-enter-button {
+  width: 100%;
+
+  margin-top: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  border: 1px solid
+    rgba(245, 166, 35, 0.3);
+
+  border-radius: 13px;
+
+  padding:
+    13px
+    15px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(245, 166, 35, 0.95),
+      rgba(210, 137, 26, 0.95)
+    );
+
+  color: #0a0a0b;
+
+  font-size: 8px;
+  font-weight: 950;
+
+  letter-spacing:
+    0.15em;
+
+  box-shadow:
+    0 8px 35px
+      rgba(245, 166, 35, 0.08);
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease;
+}
+
+.dealer-enter-button:hover:not(:disabled) {
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 13px 42px
+      rgba(245, 166, 35, 0.15);
+
+  filter: brightness(1.05);
+}
+
+.dealer-enter-button:disabled {
+  opacity: 0.55;
+}
+
+.dealer-button-loader {
+  width: 10px;
+  height: 10px;
+
+  border: 1px solid
+    rgba(10, 10, 11, 0.25);
+
+  border-top-color:
+    #0a0a0b;
+
+  border-radius: 50%;
+
+  animation:
+    dealer-core-rotate
+    700ms
+    linear
+    infinite;
+}
+
+.dealer-entry-note {
+  margin-top: 13px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  color: #494a50;
+
+  font-size: 7px;
+}
+
+.dealer-entry-note svg {
+  color: #37d879;
+}
+
+/* =========================================================
+   Live deals
+   ========================================================= */
+
+.dealer-live-deals {
+  padding: 28px 0 10px;
+}
+
+.dealer-live-deals-heading {
+  padding:
+    0
+    25px
+    22px;
+}
+
+.dealer-live-deals-heading h3 {
+  margin-top: 7px;
+}
+
+.dealer-deal-count {
+  color: #f5a623;
+
+  font-size: 9px;
+}
+
+.dealer-deals-list {
+  border-top: 1px solid
+    rgba(255, 255, 255, 0.05);
+}
+
+.dealer-deal-row {
+  width: 100%;
+
+  min-height: 72px;
+
+  border: 0;
+  border-bottom: 1px solid
+    rgba(255, 255, 255, 0.05);
+
+  padding:
+    12px
+    25px;
+
+  display: grid;
+
+  grid-template-columns:
+    38px
+    minmax(0, 1fr)
+    auto
+    16px;
+
+  align-items: center;
+
+  gap: 10px;
+
+  text-align: left;
+
+  background: transparent;
+
+  color: white;
+
+  transition:
+    background 180ms ease,
+    padding 180ms ease;
+}
+
+.dealer-deal-row:hover {
+  padding-left: 29px;
+
+  background:
+    rgba(245, 166, 35, 0.035);
+}
+
+.dealer-deal-index {
+  color: #45464c;
+
+  font-size: 7px;
+}
+
+.dealer-deal-main {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.dealer-deal-main strong {
+  overflow: hidden;
+
+  color: #d9d9dc;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.dealer-deal-main small {
+  color: #4f5056;
+
+  font-size: 7px;
+}
+
+.dealer-deal-price {
+  color: #f5a623;
+
+  font-size: 9px;
+}
+
+.dealer-deal-row > svg {
+  color: #494a50;
+
+  transition:
+    transform 180ms ease,
+    color 180ms ease;
+}
+
+.dealer-deal-row:hover > svg {
+  color: #f5a623;
+  transform:
+    translateX(3px);
+}
+
+.dealer-deals-empty {
+  min-height: 230px;
+
+  border-top: 1px solid
+    rgba(255, 255, 255, 0.05);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  color: #4e4f55;
+
+  font-size: 9px;
+}
+
+.dealer-deals-empty svg {
+  color: #f5a623;
+}
+
+.dealer-deals-empty small {
+  color: #3f4046;
+}
+
+/* =========================================================
+   Philosophy
+   ========================================================= */
+
+.dealer-philosophy {
+  padding:
+    150px
+    24px;
+
+  border-top: 1px solid
+    rgba(255, 255, 255, 0.045);
+}
+
+.dealer-philosophy-inner {
+  width: min(
+    1180px,
+    100%
+  );
+
+  margin: 0 auto;
+
+  text-align: center;
+}
+
+.dealer-philosophy h2 {
+  margin-top: 16px;
+
+  font-size:
+    clamp(
+      36px,
+      5vw,
+      64px
+    );
+
+  line-height: 0.98;
+
+  font-weight: 400;
+
+  letter-spacing:
+    -0.055em;
+}
+
+.dealer-philosophy-line {
+  margin-top: 55px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+
+  color: #44454b;
+
+  font-size: 7px;
+  font-weight: 900;
+
+  letter-spacing:
+    0.16em;
+}
+
+.dealer-philosophy-line > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.dealer-philosophy-line > div:nth-of-type(1) svg {
+  color: #f5a623;
+}
+
+.dealer-philosophy-line > div:nth-of-type(2) svg {
+  color: #37d879;
+}
+
+.dealer-philosophy-line > div:nth-of-type(3) svg {
+  color: #8b5cf6;
+}
+
+.dealer-philosophy-line > div:nth-of-type(4) svg {
+  color: #3b82f6;
+}
+
+/* =========================================================
+   Footer
+   ========================================================= */
+
+.dealer-home-footer {
+  width: min(
+    1180px,
+    calc(100% - 48px)
+  );
+
+  margin: 0 auto;
+
+  min-height: 80px;
+
+  border-top: 1px solid
+    rgba(255, 255, 255, 0.055);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  color: #414248;
+
+  font-size: 7px;
+  font-weight: 800;
+
+  letter-spacing:
+    0.16em;
+}
+
+.dealer-home-footer > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dealer-home-footer .dealer-mono {
+  color: #74757a;
+}
+
+.dealer-footer-security {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* =========================================================
+   Animations
+   ========================================================= */
+
+@keyframes dealer-story-live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.35;
+    transform: scale(0.72);
+  }
+}
+
+@keyframes dealer-orbit-rotate {
+  from {
+    transform:
+      translate(-50%, -50%)
+      rotate(0deg);
+  }
+
+  to {
+    transform:
+      translate(-50%, -50%)
+      rotate(360deg);
+  }
+}
+
+@keyframes dealer-orbit-rotate-reverse {
+  from {
+    transform:
+      translate(-50%, -50%)
+      rotate(360deg);
+  }
+
+  to {
+    transform:
+      translate(-50%, -50%)
+      rotate(0deg);
+  }
+}
+
+@keyframes dealer-core-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dealer-core-rotate-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes dealer-core-breathe {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(0.94);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes dealer-star-pulse {
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: scale(0.92);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes dealer-satellite-float {
+  0%,
+  100% {
+    margin-top: 0;
+  }
+
+  50% {
+    margin-top: -5px;
+  }
+}
+
+@keyframes dealer-copy-enter {
+  from {
+    opacity: 0;
+    transform:
+      translateY(18px)
+      scale(0.985);
+    filter: blur(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+    filter: blur(0);
+  }
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .dealer-story-stage {
+    width: 100%;
+    max-width: 650px;
+  }
+
+  .dealer-core {
+    width: 240px;
+  }
+
+  .dealer-core-word {
+    font-size: 26px;
+  }
+
+  .dealer-satellite {
+    min-width: 76px;
+    padding: 7px 8px;
+    font-size: 5px;
+  }
+
+  .dealer-entry-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .dealer-philosophy-line {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 640px) {
+  .dealer-home-nav-inner {
+    width: min(
+      calc(100% - 28px),
+      1380px
+    );
+  }
+
+  .dealer-home-nav-status {
+    display: none;
+  }
+
+  .dealer-story {
+    padding:
+      96px
+      14px
+      35px;
+  }
+
+  .dealer-story-stage {
+    aspect-ratio: 1 / 0.95;
+    margin-top: 20px;
+  }
+
+  .dealer-core {
+    width: 190px;
+  }
+
+  .dealer-core-word {
+    font-size: 22px;
+  }
+
+  .dealer-core-subtitle {
+    font-size: 5px;
+  }
+
+  .dealer-core-action {
+    margin-top: 13px;
+  }
+
+  .dealer-orbit-one {
+    width: 51%;
+  }
+
+  .dealer-orbit-two {
+    width: 72%;
+  }
+
+  .dealer-orbit-three {
+    width: 91%;
+  }
+
+  .dealer-satellite-left {
+    left: 0;
+    top: 39%;
+  }
+
+  .dealer-satellite-top {
+    top: 0;
+  }
+
+  .dealer-satellite-right {
+    right: 0;
+  }
+
+  .dealer-satellite-bottom-right {
+    right: 2%;
+    bottom: 5%;
+  }
+
+  .dealer-satellite-bottom-left {
+    left: 2%;
+    bottom: 5%;
+  }
+
+  .dealer-satellite-far-left {
+    left: -4%;
+    top: 16%;
+  }
+
+  .dealer-story-message {
+    min-height: 230px;
+  }
+
+  .dealer-story-copy h1 {
+    font-size: 42px;
+  }
+
+  .dealer-story-copy p {
+    font-size: 12px;
+  }
+
+  .dealer-story-progress {
+    width: 75%;
+  }
+
+  .dealer-entry-section {
+    padding:
+      90px
+      14px;
+  }
+
+  .dealer-entry-form {
+    padding: 20px;
+  }
+
+  .dealer-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dealer-philosophy {
+    padding:
+      100px
+      14px;
+  }
+
+  .dealer-philosophy h2 {
+    font-size: 39px;
+  }
+
+  .dealer-philosophy-line {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 13px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .dealer-philosophy-line > svg {
+    display: none;
+  }
+
+  .dealer-home-footer {
+    width: calc(100% - 28px);
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 9px;
+    padding: 18px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dealer-orbit,
+  .dealer-core-ring,
+  .dealer-core-halo,
+  .dealer-core-star,
+  .dealer-satellite,
+  .dealer-story-live > span {
+    animation: none !important;
+  }
+
+  .dealer-story-copy-enter {
+    animation: none !important;
+  }
+}
+
+/* =========================================================
+   DEALER — Ferris Wheel Orbit
+   ========================================================= */
+
+.dealer-orbit-page {
+  position: relative;
+  min-height: 100svh;
+  width: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(245, 166, 35, 0.045),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 15% 30%,
+      rgba(59, 130, 246, 0.025),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 85% 70%,
+      rgba(139, 92, 246, 0.025),
+      transparent 25%
+    ),
+    #070708;
+  color: #ffffff;
+  isolation: isolate;
+}
+
+.dealer-orbit-ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at center,
+      transparent 0%,
+      transparent 48%,
+      rgba(255, 255, 255, 0.008) 70%,
+      transparent 100%
+    );
+}
+
+.dealer-orbit-header {
+  position: absolute;
+  top: 26px;
+  left: 40px;
+  right: 40px;
+  z-index: 50;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dealer-orbit-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dealer-orbit-brand-mark {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(245, 166, 35, 0.32);
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(245, 166, 35, 0.12),
+      rgba(245, 166, 35, 0.025)
+    );
+
+  color: #f5a623;
+
+  box-shadow:
+    0 0 30px
+      rgba(245, 166, 35, 0.06);
+}
+
+.dealer-orbit-brand-name {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+}
+
+.dealer-orbit-brand-subtitle {
+  margin: 4px 0 0;
+
+  color: #55565d;
+
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+}
+
+.dealer-orbit-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #55565d;
+
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+.dealer-orbit-status-dot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 999px;
+
+  background: #37d879;
+
+  box-shadow:
+    0 0 12px
+      rgba(55, 216, 121, 0.65);
+
+  animation:
+    dealer-orbit-status-pulse
+    1.8s
+    ease-in-out
+    infinite;
+}
+
+.dealer-orbit-stage {
+  position: relative;
+
+  width: 100%;
+  min-height: 100svh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 80px 20px 80px;
+}
+
+.dealer-orbit-canvas {
+  position: relative;
+
+  width: min(88vw, 760px);
+  aspect-ratio: 1 / 1;
+
+  margin-top: 10px;
+}
+
+/* ---------------------------------------------------------
+   Orbit rings
+   --------------------------------------------------------- */
+
+.dealer-orbit-ring {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  border-radius: 999px;
+
+  transform:
+    translate(-50%, -50%);
+
+  pointer-events: none;
+}
+
+.dealer-orbit-ring-outer {
+  width: 92%;
+  height: 92%;
+
+  border: 1px dashed
+    rgba(255, 255, 255, 0.045);
+
+  animation:
+    dealer-orbit-ring-spin
+    64s
+    linear
+    infinite;
+}
+
+.dealer-orbit-ring-middle {
+  width: 74%;
+  height: 74%;
+
+  border: 1px solid
+    rgba(245, 166, 35, 0.08);
+
+  animation:
+    dealer-orbit-ring-spin-reverse
+    48s
+    linear
+    infinite;
+}
+
+.dealer-orbit-ring-inner {
+  width: 57%;
+  height: 57%;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.055);
+
+  animation:
+    dealer-orbit-ring-spin
+    36s
+    linear
+    infinite;
+}
+
+/* ---------------------------------------------------------
+   Crosshair
+   --------------------------------------------------------- */
+
+.dealer-orbit-crosshair-horizontal {
+  position: absolute;
+
+  left: 11%;
+  right: 11%;
+  top: 50%;
+
+  height: 1px;
+
+  transform:
+    translateY(-50%);
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(245, 166, 35, 0.08),
+      transparent
+    );
+
+  pointer-events: none;
+}
+
+.dealer-orbit-crosshair-vertical {
+  position: absolute;
+
+  top: 11%;
+  bottom: 11%;
+  left: 50%;
+
+  width: 1px;
+
+  transform:
+    translateX(-50%);
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      rgba(245, 166, 35, 0.08),
+      transparent
+    );
+
+  pointer-events: none;
+}
+
+/* =========================================================
+   THE FERRIS WHEEL
+
+   The track rotates.
+   The cabins counter-rotate.
+
+   Result:
+   - cabin moves around DEALER
+   - cabin stays horizontal
+   - text stays horizontal
+   ========================================================= */
+
+.dealer-orbit-track {
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 20;
+
+  transform-origin: center center;
+
+  animation:
+    dealer-orbit-track-spin
+    34s
+    linear
+    infinite;
+
+  will-change: transform;
+}
+
+/* ---------------------------------------------------------
+   Individual orbit positions
+   --------------------------------------------------------- */
+
+.dealer-orbit-node {
+  --orbit-radius: 43%;
+
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: max-content;
+  height: max-content;
+
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--orbit-angle))
+    translateY(
+      calc(
+        -1 * var(--orbit-radius)
+      )
+    );
+
+  transform-origin: center center;
+
+  pointer-events: none;
+}
+
+/*
+ * The node itself is attached to the rotating wheel.
+ *
+ * The cabin receives the opposite rotation.
+ *
+ * That is what creates the Ferris-wheel effect.
+ */
+.dealer-orbit-cabin {
+  --feature-color: #f5a623;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-width: 112px;
+
+  padding: 10px 14px;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.08);
+
+  border-radius: 999px;
+
+  background:
+    rgba(11, 11, 12, 0.94);
+
+  color: #77777f;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+
+  white-space: nowrap;
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  box-shadow:
+    0 10px 35px
+      rgba(0, 0, 0, 0.28);
+
+  cursor: pointer;
+
+  pointer-events: auto;
+
+  /*
+   * Static angle is cancelled here.
+   * The animation then cancels the continuously
+   * rotating Ferris wheel.
+   */
+  transform:
+    rotate(
+      calc(
+        var(--orbit-angle) * -1
+      )
+    );
+
+  animation:
+    dealer-orbit-cabin-counter
+    34s
+    linear
+    infinite;
+
+  animation-delay:
+    var(--orbit-delay);
+
+  will-change: transform;
+
+  transition:
+    color 220ms ease,
+    border-color 220ms ease,
+    background 220ms ease,
+    box-shadow 220ms ease,
+    scale 220ms ease;
+}
+
+/* ---------------------------------------------------------
+   Cabin icon
+   --------------------------------------------------------- */
+
+.dealer-orbit-cabin-icon {
+  width: 22px;
+  height: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--feature-color) 35%,
+      transparent
+    );
+
+  border-radius: 999px;
+
+  color: var(--feature-color);
+
+  background:
+    color-mix(
+      in srgb,
+      var(--feature-color) 8%,
+      transparent
+    );
+}
+
+/* ---------------------------------------------------------
+   Cabin label
+   --------------------------------------------------------- */
+
+.dealer-orbit-cabin-label {
+  line-height: 1;
+}
+
+/* ---------------------------------------------------------
+   Hover
+   --------------------------------------------------------- */
+
+.dealer-orbit-cabin:hover {
+  color: #ffffff;
+
+  border-color:
+    color-mix(
+      in srgb,
+      var(--feature-color) 48%,
+      transparent
+    );
+
+  background:
+    color-mix(
+      in srgb,
+      var(--feature-color) 8%,
+      #0b0b0c
+    );
+
+  box-shadow:
+    0 0 32px
+      color-mix(
+        in srgb,
+        var(--feature-color) 12%,
+        transparent
+      );
+
+  scale: 1.06;
+}
+
+.dealer-orbit-cabin-selected {
+  color: #ffffff;
+
+  border-color:
+    color-mix(
+      in srgb,
+      var(--feature-color) 65%,
+      transparent
+    );
+
+  background:
+    color-mix(
+      in srgb,
+      var(--feature-color) 10%,
+      #0b0b0c
+    );
+
+  box-shadow:
+    0 0 34px
+      color-mix(
+        in srgb,
+        var(--feature-color) 16%,
+        transparent
+      );
+
+  scale: 1.08;
+}
+
+/* =========================================================
+   Central DEALER
+   ========================================================= */
+
+.dealer-orbit-core {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 270px;
+  aspect-ratio: 1 / 1;
+
+  transform:
+    translate(-50%, -50%);
+
+  z-index: 40;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(19, 19, 21, 0.98),
+      rgba(8, 8, 9, 0.97) 68%,
+      rgba(8, 8, 9, 0.92)
+    );
+
+  border: 1px solid
+    rgba(245, 166, 35, 0.16);
+
+  box-shadow:
+    0 0 80px
+      rgba(245, 166, 35, 0.055),
+    inset 0 0 50px
+      rgba(245, 166, 35, 0.018);
+}
+
+.dealer-orbit-core-glow {
+  position: absolute;
+
+  width: 76%;
+  aspect-ratio: 1;
+
+  border-radius: 999px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(245, 166, 35, 0.12),
+      rgba(245, 166, 35, 0.025) 45%,
+      transparent 72%
+    );
+
+  filter: blur(10px);
+
+  animation:
+    dealer-orbit-core-breathe
+    4.5s
+    ease-in-out
+    infinite;
+
+  pointer-events: none;
+}
+
+.dealer-orbit-core-ring {
+  position: absolute;
+
+  border-radius: 999px;
+
+  pointer-events: none;
+}
+
+.dealer-orbit-core-ring-one {
+  inset: 8%;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.07);
+
+  border-left-color:
+    rgba(245, 166, 35, 0.55);
+
+  border-bottom-color:
+    rgba(245, 166, 35, 0.2);
+
+  animation:
+    dealer-orbit-core-spin
+    22s
+    linear
+    infinite;
+}
+
+.dealer-orbit-core-ring-two {
+  inset: 17%;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.045);
+
+  border-right-color:
+    rgba(245, 166, 35, 0.4);
+
+  animation:
+    dealer-orbit-core-spin-reverse
+    16s
+    linear
+    infinite;
+}
+
+.dealer-orbit-core-content {
+  position: relative;
+
+  z-index: 5;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+}
+
+.dealer-orbit-core-icon {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 13px;
+
+  border: 1px solid
+    rgba(245, 166, 35, 0.25);
+
+  border-radius: 999px;
+
+  background:
+    rgba(245, 166, 35, 0.055);
+
+  color: #f5a623;
+
+  box-shadow:
+    0 0 25px
+      rgba(245, 166, 35, 0.07);
+}
+
+.dealer-orbit-core-content h1 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 38px;
+  line-height: 1;
+
+  font-weight: 300;
+
+  letter-spacing: 0.13em;
+
+  text-indent: 0.13em;
+}
+
+.dealer-orbit-core-content p {
+  margin: 8px 0 0;
+
+  color: #66676e;
+
+  font-size: 7px;
+  font-weight: 800;
+
+  letter-spacing: 0.3em;
+
+  text-indent: 0.3em;
+}
+
+.dealer-orbit-enter {
+  margin-top: 20px;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  border: 0;
+
+  padding: 0;
+
+  background: transparent;
+
+  color: #b4b4b9;
+
+  font-size: 8px;
+  font-weight: 900;
+
+  letter-spacing: 0.16em;
+
+  cursor: pointer;
+
+  transition:
+    color 180ms ease,
+    gap 180ms ease;
+}
+
+.dealer-orbit-enter:hover {
+  color: #f5a623;
+  gap: 13px;
+}
+
+.dealer-orbit-enter:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dealer-orbit-arrow {
+  color: #f5a623;
+  font-size: 13px;
+}
+
+/* =========================================================
+   Selected information
+   ========================================================= */
+
+.dealer-orbit-info {
+  position: absolute;
+
+  left: 50%;
+  bottom: 32px;
+
+  width: min(
+    calc(100% - 40px),
+    560px
+  );
+
+  transform:
+    translate(-50%, 18px);
+
+  z-index: 60;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    opacity 350ms ease,
+    transform 350ms ease;
+}
+
+.dealer-orbit-info-visible {
+  opacity: 1;
+
+  transform:
+    translate(-50%, 0);
+}
+
+.dealer-orbit-info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  padding: 15px 18px;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.08);
+
+  border-radius: 16px;
+
+  background:
+    rgba(12, 12, 13, 0.94);
+
+  box-shadow:
+    0 20px 70px
+      rgba(0, 0, 0, 0.42);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.dealer-orbit-info-icon {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border: 1px solid;
+
+  border-radius: 999px;
+}
+
+.dealer-orbit-info-label {
+  margin: 1px 0 0;
+
+  font-size: 8px;
+  font-weight: 900;
+
+  letter-spacing: 0.18em;
+}
+
+.dealer-orbit-info-description {
+  margin: 5px 0 0;
+
+  color: #a1a1aa;
+
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   Bottom labels
+   ========================================================= */
+
+.dealer-orbit-bottom-left {
+  position: absolute;
+
+  left: 40px;
+  bottom: 24px;
+
+  z-index: 50;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #505057;
+
+  font-size: 7px;
+  font-weight: 700;
+
+  letter-spacing: 0.16em;
+}
+
+.dealer-orbit-bottom-left svg {
+  color: rgba(245, 166, 35, 0.6);
+}
+
+.dealer-orbit-bottom-right {
+  position: absolute;
+
+  right: 40px;
+  bottom: 24px;
+
+  z-index: 50;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  color: #505057;
+
+  font-size: 7px;
+  font-weight: 700;
+
+  letter-spacing: 0.16em;
+}
+
+.dealer-orbit-bottom-line {
+  width: 28px;
+  height: 1px;
+
+  background:
+    rgba(255, 255, 255, 0.08);
+}
+
+/* =========================================================
+   Animations
+   ========================================================= */
+
+/*
+ * Main Ferris wheel.
+ *
+ * IMPORTANT:
+ * This rotates the track only.
+ */
+@keyframes dealer-orbit-track-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/*
+ * Cabin counter-rotation.
+ *
+ * Every cabin rotates exactly opposite to the track.
+ *
+ * Because each cabin also has its own static angle,
+ * the angle is cancelled at both ends.
+ */
+@keyframes dealer-orbit-cabin-counter {
+  from {
+    transform:
+      rotate(
+        calc(
+          var(--orbit-angle) * -1
+        )
+      );
+  }
+
+  to {
+    transform:
+      rotate(
+        calc(
+          var(--orbit-angle) * -1 - 360deg
+        )
+      );
+  }
+}
+
+@keyframes dealer-orbit-ring-spin {
+  from {
+    transform:
+      translate(-50%, -50%)
+      rotate(0deg);
+  }
+
+  to {
+    transform:
+      translate(-50%, -50%)
+      rotate(360deg);
+  }
+}
+
+@keyframes dealer-orbit-ring-spin-reverse {
+  from {
+    transform:
+      translate(-50%, -50%)
+      rotate(360deg);
+  }
+
+  to {
+    transform:
+      translate(-50%, -50%)
+      rotate(0deg);
+  }
+}
+
+@keyframes dealer-orbit-core-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dealer-orbit-core-spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes dealer-orbit-core-breathe {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(0.94);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes dealer-orbit-status-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.35;
+    transform: scale(0.75);
+  }
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .dealer-orbit-header {
+    left: 24px;
+    right: 24px;
+  }
+
+  .dealer-orbit-canvas {
+    width: min(94vw, 680px);
+  }
+
+  .dealer-orbit-core {
+    width: 230px;
+  }
+
+  .dealer-orbit-core-content h1 {
+    font-size: 31px;
+  }
+
+  .dealer-orbit-cabin {
+    min-width: 100px;
+    padding: 9px 12px;
+    font-size: 7px;
+  }
+
+  .dealer-orbit-bottom-left,
+  .dealer-orbit-bottom-right {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .dealer-orbit-stage {
+    padding:
+      70px
+      10px
+      70px;
+  }
+
+  .dealer-orbit-canvas {
+    width: 96vw;
+  }
+
+  .dealer-orbit-core {
+    width: 185px;
+  }
+
+  .dealer-orbit-core-content h1 {
+    font-size: 24px;
+  }
+
+  .dealer-orbit-core-content p {
+    font-size: 5px;
+  }
+
+  .dealer-orbit-core-icon {
+    width: 30px;
+    height: 30px;
+    margin-bottom: 10px;
+  }
+
+  .dealer-orbit-enter {
+    margin-top: 14px;
+    font-size: 7px;
+  }
+
+  .dealer-orbit-node {
+    --orbit-radius: 40%;
+  }
+
+  .dealer-orbit-cabin {
+    min-width: 86px;
+    padding: 7px 9px;
+    gap: 5px;
+    font-size: 6px;
+    letter-spacing: 0.11em;
+  }
+
+  .dealer-orbit-cabin-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .dealer-orbit-cabin-icon svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .dealer-orbit-header {
+    top: 18px;
+    left: 16px;
+    right: 16px;
+  }
+
+  .dealer-orbit-brand-mark {
+    width: 31px;
+    height: 31px;
+  }
+
+  .dealer-orbit-brand-name {
+    font-size: 11px;
+  }
+
+  .dealer-orbit-brand-subtitle {
+    font-size: 6px;
+  }
+
+  .dealer-orbit-status {
+    display: none;
+  }
+
+  .dealer-orbit-info {
+    bottom: 18px;
+  }
+
+  .dealer-orbit-info-card {
+    padding: 12px 14px;
+  }
+
+  .dealer-orbit-info-description {
+    font-size: 10px;
+  }
+}
+
+/* =========================================================
+   Reduced Motion
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .dealer-orbit-track,
+  .dealer-orbit-ring,
+  .dealer-orbit-cabin,
+  .dealer-orbit-core-glow,
+  .dealer-orbit-core-ring,
+  .dealer-orbit-status-dot {
+    animation: none !important;
+  }
+}

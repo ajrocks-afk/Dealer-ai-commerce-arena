@@ -1,0 +1,553 @@
+﻿"use client";
+
+import {
+  Activity,
+  ArrowRight,
+  Bot,
+  CheckCircle2,
+  CircleDollarSign,
+  Clock3,
+  Cpu,
+  ShieldCheck,
+  ShoppingCart,
+  Sparkles,
+  Terminal,
+  Zap,
+} from "lucide-react";
+
+const auditEvents = [
+  {
+    time: "13:51:37",
+    event: "NEGOTIATION_STARTED",
+    detail: "Buyer Agent initiated session",
+    type: "buyer",
+  },
+  {
+    time: "13:51:39",
+    event: "OFFER_SUBMITTED",
+    detail: "â‚¹54,000 Ã— 1",
+    type: "buyer",
+  },
+  {
+    time: "13:51:40",
+    event: "POLICY_CHECK",
+    detail: "Discount within configured limit",
+    type: "system",
+  },
+  {
+    time: "13:51:42",
+    event: "COUNTER_GENERATED",
+    detail: "â‚¹56,500 Ã— 1",
+    type: "merchant",
+  },
+];
+
+export default function Home() {
+  return (
+    <main className="dealer-grid min-h-screen bg-[#0A0A0B]">
+      {/* HEADER */}
+      <header className="sticky top-0 z-20 border-b border-[#2A2D33] bg-[#0A0A0B]/95 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-5 lg:px-8">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-md border border-[#F5A623]/40 bg-[#F5A623]/10">
+              <span className="text-xl font-black text-[#F5A623]">
+                D
+              </span>
+            </div>
+
+            <div>
+              <div className="text-sm font-black tracking-[0.22em] text-[#F5F5F5]">
+                DEALER
+              </div>
+              <div className="text-[9px] tracking-[0.25em] text-[#71717A]">
+                AI COMMERCE ARENA
+              </div>
+            </div>
+          </div>
+
+          <div className="hidden items-center gap-8 md:flex">
+            <div className="text-xs text-[#71717A]">
+              ACTIVE SESSION
+              <span className="dealer-mono ml-2 text-[#A1A1AA]">
+                #A82F91
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 rounded-full border border-[#22C55E]/25 bg-[#22C55E]/5 px-3 py-1.5">
+              <span className="dealer-live-dot h-2 w-2 rounded-full bg-[#22C55E]" />
+              <span className="text-[10px] font-bold tracking-[0.15em] text-[#22C55E]">
+                LIVE
+              </span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* CONTENT */}
+      <div className="mx-auto max-w-[1600px] p-5 lg:p-8">
+        {/* STATUS STRIP */}
+        <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <StatusCard
+            label="DEAL STATUS"
+            value="NEGOTIATING"
+            icon={<Activity size={16} />}
+            accent="gold"
+          />
+
+          <StatusCard
+            label="CURRENT ROUND"
+            value="03 / 05"
+            icon={<Clock3 size={16} />}
+            accent="blue"
+          />
+
+          <StatusCard
+            label="CURRENT PRICE"
+            value="â‚¹56,500"
+            icon={<CircleDollarSign size={16} />}
+            accent="purple"
+          />
+
+          <StatusCard
+            label="POLICY"
+            value="ENFORCED"
+            icon={<ShieldCheck size={16} />}
+            accent="green"
+          />
+        </section>
+
+        {/* ARENA */}
+        <section className="grid gap-4 xl:grid-cols-[1fr_1.25fr_1fr]">
+          {/* BUYER */}
+          <AgentPanel
+            side="BUYER"
+            color="#3B82F6"
+            icon={<ShoppingCart size={18} />}
+            status="ACTIVE"
+          >
+            <div className="mb-6">
+              <p className="mb-2 text-[10px] font-bold tracking-[0.2em] text-[#71717A]">
+                BUYER OBJECTIVE
+              </p>
+
+              <p className="text-sm leading-6 text-[#A1A1AA]">
+                Secure the best available price while staying
+                within the buyer&apos;s configured budget.
+              </p>
+            </div>
+
+            <OfferCard
+              label="LATEST OFFER"
+              price="â‚¹54,000"
+              quantity="Ã— 1"
+              color="#3B82F6"
+            />
+
+            <div className="mt-6 flex items-start gap-3 rounded-lg border border-[#3B82F6]/20 bg-[#3B82F6]/5 p-4">
+              <Bot
+                size={17}
+                className="mt-0.5 shrink-0 text-[#3B82F6]"
+              />
+
+              <div>
+                <p className="text-xs font-semibold text-[#F5F5F5]">
+                  Buyer Agent
+                </p>
+                <p className="mt-1 text-xs leading-5 text-[#A1A1AA]">
+                  â€œThe current counter exceeds the target.
+                  I&apos;ll attempt one final concession.â€
+                </p>
+              </div>
+            </div>
+          </AgentPanel>
+
+          {/* DEAL ENGINE */}
+          <DealEngine />
+
+          {/* MERCHANT */}
+          <AgentPanel
+            side="MERCHANT"
+            color="#8B5CF6"
+            icon={<Bot size={18} />}
+            status="ACTIVE"
+          >
+            <div className="mb-6">
+              <p className="mb-2 text-[10px] font-bold tracking-[0.2em] text-[#71717A]">
+                MERCHANT OBJECTIVE
+              </p>
+
+              <p className="text-sm leading-6 text-[#A1A1AA]">
+                Protect minimum margin while maximizing the
+                probability of a successful transaction.
+              </p>
+            </div>
+
+            <OfferCard
+              label="LATEST COUNTER"
+              price="â‚¹56,500"
+              quantity="Ã— 1"
+              color="#8B5CF6"
+            />
+
+            <div className="mt-6 flex items-start gap-3 rounded-lg border border-[#8B5CF6]/20 bg-[#8B5CF6]/5 p-4">
+              <Bot
+                size={17}
+                className="mt-0.5 shrink-0 text-[#8B5CF6]"
+              />
+
+              <div>
+                <p className="text-xs font-semibold text-[#F5F5F5]">
+                  Merchant Agent
+                </p>
+                <p className="mt-1 text-xs leading-5 text-[#A1A1AA]">
+                  â€œThis counter preserves the configured
+                  minimum margin.â€
+                </p>
+              </div>
+            </div>
+          </AgentPanel>
+        </section>
+
+        {/* AUDIT TRAIL */}
+        <section className="mt-4 dealer-panel rounded-lg">
+          <div className="flex items-center justify-between border-b border-[#2A2D33] px-5 py-4">
+            <div className="flex items-center gap-3">
+              <Terminal size={16} className="text-[#F5A623]" />
+
+              <div>
+                <h2 className="text-xs font-bold tracking-[0.18em] text-[#F5F5F5]">
+                  AUDIT TRAIL
+                </h2>
+
+                <p className="mt-1 text-[10px] text-[#71717A]">
+                  Deterministic system events
+                </p>
+              </div>
+            </div>
+
+            <span className="dealer-mono text-[10px] text-[#71717A]">
+              SESSION #A82F91
+            </span>
+          </div>
+
+          <div className="divide-y divide-[#2A2D33]">
+            {auditEvents.map((event) => (
+              <div
+                key={`${event.time}-${event.event}`}
+                className="grid grid-cols-[80px_190px_1fr] items-center gap-4 px-5 py-3"
+              >
+                <span className="dealer-mono text-[10px] text-[#71717A]">
+                  {event.time}
+                </span>
+
+                <span
+                  className={`dealer-mono text-[10px] font-semibold ${
+                    event.type === "buyer"
+                      ? "text-[#3B82F6]"
+                      : event.type === "merchant"
+                        ? "text-[#8B5CF6]"
+                        : "text-[#F5A623]"
+                  }`}
+                >
+                  {event.event}
+                </span>
+
+                <span className="text-xs text-[#A1A1AA]">
+                  {event.detail}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* SYSTEM FOOTER */}
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[#2A2D33] pt-5">
+          <div className="flex items-center gap-5">
+            <SystemIndicator
+              label="AGENT VALIDATION"
+              status="PASS"
+            />
+
+            <SystemIndicator
+              label="POLICY ENGINE"
+              status="PASS"
+            />
+
+            <SystemIndicator
+              label="STATE MACHINE"
+              status="PASS"
+            />
+          </div>
+
+          <div className="dealer-mono flex items-center gap-2 text-[10px] text-[#71717A]">
+            <Cpu size={12} />
+            DEAL ENGINE v0.1
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+function StatusCard({
+  label,
+  value,
+  icon,
+  accent,
+}: {
+  label: string;
+  value: string;
+  icon: React.ReactNode;
+  accent: "gold" | "blue" | "purple" | "green";
+}) {
+  const colors = {
+    gold: "text-[#F5A623]",
+    blue: "text-[#3B82F6]",
+    purple: "text-[#8B5CF6]",
+    green: "text-[#22C55E]",
+  };
+
+  return (
+    <div className="dealer-panel rounded-lg p-4">
+      <div className="flex items-center justify-between">
+        <span className="text-[9px] font-bold tracking-[0.18em] text-[#71717A]">
+          {label}
+        </span>
+
+        <span className={colors[accent]}>{icon}</span>
+      </div>
+
+      <p className="dealer-mono mt-3 text-sm font-bold text-[#F5F5F5]">
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function AgentPanel({
+  side,
+  color,
+  icon,
+  status,
+  children,
+}: {
+  side: string;
+  color: string;
+  icon: React.ReactNode;
+  status: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className="dealer-panel rounded-lg p-5"
+      style={{
+        borderTopColor: color,
+        borderTopWidth: "2px",
+      }}
+    >
+      <div className="mb-6 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div
+            className="flex h-9 w-9 items-center justify-center rounded-md"
+            style={{
+              color,
+              backgroundColor: `${color}12`,
+              border: `1px solid ${color}35`,
+            }}
+          >
+            {icon}
+          </div>
+
+          <div>
+            <h2 className="text-xs font-black tracking-[0.18em] text-[#F5F5F5]">
+              {side} AI
+            </h2>
+
+            <p className="dealer-mono mt-1 text-[9px] text-[#71717A]">
+              AUTONOMOUS AGENT
+            </p>
+          </div>
+        </div>
+
+        <span
+          className="rounded-full px-2.5 py-1 text-[9px] font-bold tracking-wider"
+          style={{
+            color,
+            backgroundColor: `${color}12`,
+          }}
+        >
+          {status}
+        </span>
+      </div>
+
+      {children}
+    </div>
+  );
+}
+
+function OfferCard({
+  label,
+  price,
+  quantity,
+  color,
+}: {
+  label: string;
+  price: string;
+  quantity: string;
+  color: string;
+}) {
+  return (
+    <div
+      className="rounded-lg border p-5"
+      style={{
+        borderColor: `${color}30`,
+        backgroundColor: `${color}08`,
+      }}
+    >
+      <p className="text-[9px] font-bold tracking-[0.2em] text-[#71717A]">
+        {label}
+      </p>
+
+      <div className="mt-3 flex items-end justify-between">
+        <span
+          className="dealer-mono text-3xl font-bold"
+          style={{ color }}
+        >
+          {price}
+        </span>
+
+        <span className="dealer-mono text-xs text-[#71717A]">
+          {quantity}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function DealEngine() {
+  return (
+    <div className="dealer-panel-elevated dealer-gold-glow rounded-lg p-5">
+      <div className="mb-6 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-md border border-[#F5A623]/30 bg-[#F5A623]/10">
+            <Zap size={18} className="text-[#F5A623]" />
+          </div>
+
+          <div>
+            <h2 className="text-xs font-black tracking-[0.18em] text-[#F5F5F5]">
+              DEAL ENGINE
+            </h2>
+
+            <p className="dealer-mono mt-1 text-[9px] text-[#71717A]">
+              DETERMINISTIC CONTROL
+            </p>
+          </div>
+        </div>
+
+        <Sparkles size={15} className="text-[#F5A623]" />
+      </div>
+
+      <div className="rounded-lg border border-[#2A2D33] bg-[#0A0A0B] p-5 text-center">
+        <p className="text-[9px] font-bold tracking-[0.2em] text-[#71717A]">
+          CURRENT OFFER
+        </p>
+
+        <p className="dealer-mono mt-3 text-4xl font-bold text-[#F5A623]">
+          â‚¹56,500
+        </p>
+
+        <p className="dealer-mono mt-2 text-[10px] text-[#71717A]">
+          ROUND 03 / 05
+        </p>
+      </div>
+
+      <div className="my-6 flex items-center justify-center">
+        <div className="h-px flex-1 bg-[#2A2D33]" />
+
+        <div className="mx-3 flex h-8 w-8 items-center justify-center rounded-full border border-[#F5A623]/40 bg-[#F5A623]/10">
+          <ArrowRight size={14} className="text-[#F5A623]" />
+        </div>
+
+        <div className="h-px flex-1 bg-[#2A2D33]" />
+      </div>
+
+      <div className="space-y-2">
+        <EngineCheck
+          label="AI DECISION"
+          value="VALIDATED"
+          icon={<CheckCircle2 size={14} />}
+          color="#22C55E"
+        />
+
+        <EngineCheck
+          label="POLICY CHECK"
+          value="APPROVED"
+          icon={<ShieldCheck size={14} />}
+          color="#22C55E"
+        />
+
+        <EngineCheck
+          label="STATE MACHINE"
+          value="NEGOTIATING"
+          icon={<Activity size={14} />}
+          color="#F5A623"
+        />
+      </div>
+
+      <button className="mt-6 flex w-full items-center justify-center gap-2 rounded-md bg-[#F5A623] px-4 py-3 text-xs font-black tracking-[0.12em] text-black transition hover:bg-[#ffb83f]">
+        <Zap size={14} />
+        RUN NEXT ROUND
+      </button>
+    </div>
+  );
+}
+
+function EngineCheck({
+  label,
+  value,
+  icon,
+  color,
+}: {
+  label: string;
+  value: string;
+  icon: React.ReactNode;
+  color: string;
+}) {
+  return (
+    <div className="flex items-center justify-between rounded-md border border-[#2A2D33] bg-[#111214] px-3 py-2.5">
+      <span className="text-[9px] font-bold tracking-[0.12em] text-[#71717A]">
+        {label}
+      </span>
+
+      <div
+        className="flex items-center gap-1.5 text-[9px] font-bold"
+        style={{ color }}
+      >
+        {icon}
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function SystemIndicator({
+  label,
+  status,
+}: {
+  label: string;
+  status: string;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <CheckCircle2 size={12} className="text-[#22C55E]" />
+
+      <span className="text-[9px] font-bold tracking-[0.12em] text-[#71717A]">
+        {label}
+      </span>
+
+      <span className="dealer-mono text-[9px] text-[#22C55E]">
+        {status}
+      </span>
+    </div>
+  );
+}

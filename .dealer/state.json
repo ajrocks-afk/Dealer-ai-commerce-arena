@@ -1,0 +1,43 @@
+{
+  "project": "Dealer",
+  "status": "active",
+  "currentPhase": "foundation",
+  "currentTask": "deal-session-model",
+  "lastCompleted": "merchant-policy-model",
+  "completed": [
+    "nextjs-project",
+    "typescript",
+    "eslint",
+    "tailwind",
+    "app-router",
+    "product-model",
+    "merchant-policy-model"
+
+  ],
+  "inProgress": [
+    "deal-session-model"
+  ],
+  
+  "next": [
+    "deal-session-model",
+    "offer-types",
+    "audit-event-model",
+    "razorpay-order-model",
+    "money-utilities",
+    "validators",
+    "policy-engine",
+    "state-machine",
+    "agents",
+    "deal-controller",
+    "firebase",
+    "api",
+    "frontend",
+    "razorpay",
+    "tests"
+  ],
+  "integrations": {
+    "gemini": "planned",
+    "firebase": "planned",
+    "razorpay": "planned"
+  }
+}

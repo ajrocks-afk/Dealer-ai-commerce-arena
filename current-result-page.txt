@@ -1,0 +1,1446 @@
+﻿"use client";
+
+import {
+  ArrowLeft,
+  ArrowRight,
+  BarChart3,
+  CheckCircle2,
+  CircleDollarSign,
+  Clock3,
+  Layers3,
+  ShieldCheck,
+  Sparkles,
+  Trophy,
+  TrendingDown,
+} from "lucide-react";
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { useParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import {
+  getAllDeals,
+  getDeal,
+  type DealSession,
+} from "@/lib/dealer-api";
+
+type DealResponse = Awaited<ReturnType<typeof getDeal>>;
+type Offer = NonNullable<DealResponse["offers"]>[number];
+type Audit = NonNullable<DealResponse["audit"]>[number];
+
+const money = (value: number) =>
+  `â‚¹${Math.round(value).toLocaleString("en-IN")}`;
+
+export default function DealResultPage() {
+  const params = useParams<{ dealId: string }>();
+  const dealId = params?.dealId;
+
+  const [session, setSession] = useState<DealSession | null>(null);
+  const [offers, setOffers] = useState<Offer[]>([]);
+  const [audit, setAudit] = useState<Audit[]>([]);
+  const [history, setHistory] = useState<DealSession[]>([]);
+  const [error, setError] = useState("");
+
+  const load = useCallback(async () => {
+    if (!dealId) return;
+
+    try {
+      setError("");
+
+      const current = await getDeal(dealId);
+
+      if (!current.success || !current.session) {
+        throw new Error(current.error ?? "Unable to load final deal");
+      }
+
+      setSession(current.session);
+      setOffers(current.offers ?? []);
+      setAudit(current.audit ?? []);
+
+      const all = await getAllDeals();
+
+      if (all.success) {
+        setHistory(
+          (all.deals ?? [])
+            .filter(
+              (deal) => deal.buyerId === current.session!.buyerId
+            )
+            .sort(
+              (a, b) =>
+                +new Date(b.updatedAt) -
+                +new Date(a.updatedAt)
+            )
+        );
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to load result"
+      );
+    }
+  }, [dealId]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const finalPrice =
+    session?.acceptedPrice ??
+    session?.currentPrice ??
+    session?.initialPrice ??
+    0;
+
+  const startingPrice = session?.initialPrice ?? 0;
+
+  const savings = Math.max(
+    0,
+    startingPrice - finalPrice
+  );
+
+  const savingsPercent =
+    startingPrice > 0
+      ? (savings / startingPrice) * 100
+      : 0;
+
+  const buyerOffers = useMemo(
+    () =>
+      offers.filter(
+        (offer) => offer.actor === "BUYER_AGENT"
+      ),
+    [offers]
+  );
+
+  const merchantOffers = useMemo(
+    () =>
+      offers.filter(
+        (offer) => offer.actor === "MERCHANT_AGENT"
+      ),
+    [offers]
+  );
+
+  const trajectory = useMemo(() => {
+    if (!session) return [];
+
+    return [
+      {
+        label: "START",
+        price: session.initialPrice,
+        round: 0,
+        actor: "START",
+      },
+      ...offers.map((offer) => ({
+        label:
+          offer.actor === "BUYER_AGENT"
+            ? "BUYER"
+            : "MERCHANT",
+        price: offer.price,
+        round: offer.round,
+        actor: offer.actor,
+      })),
+    ];
+  }, [offers, session]);
+
+  const trajectoryBounds = useMemo(() => {
+    const prices = trajectory.map(
+      (point) => point.price
+    );
+
+    const allPrices = [
+      ...prices,
+      startingPrice,
+      finalPrice,
+    ];
+
+    return {
+      min: Math.min(...allPrices, 0),
+      max: Math.max(...allPrices, 1),
+    };
+  }, [trajectory, startingPrice, finalPrice]);
+
+  if (!session) {
+    return (
+      <main className="dealer-result min-h-screen bg-[#05060A] text-white">
+        <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-6">
+          <div className="result-loading-orb result-loading-orb-a" />
+          <div className="result-loading-orb result-loading-orb-b" />
+
+          <div className="relative z-10 text-center">
+            <div className="result-loader mx-auto">
+              <div className="result-loader-core" />
+            </div>
+
+            <p className="dealer-kicker mt-6 text-[#60A5FA]">
+              LOADING FINAL DEAL
+            </p>
+
+            <p className="mt-3 text-sm text-[#52525B]">
+              Reading persisted negotiation state...
+            </p>
+
+            {error && (
+              <div className="mx-auto mt-5 max-w-md rounded-xl border border-[#F87171]/15 bg-[#F87171]/[0.04] px-4 py-3">
+                <p className="text-xs leading-5 text-[#F87171]">
+                  {error}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <ResultStyles />
+      </main>
+    );
+  }
+
+  const terminal =
+    session.state === "COMPLETED" ||
+    session.state === "PAID";
+
+  return (
+    <main className="dealer-result min-h-screen overflow-hidden bg-[#05060A] text-white">
+      <div className="result-grid" />
+
+      <div className="result-orb result-orb-a" />
+      <div className="result-orb result-orb-b" />
+
+      <header className="relative z-20 border-b border-white/[0.07] bg-[#05060A]/80 backdrop-blur-2xl">
+        <div className="mx-auto flex h-[72px] max-w-[1500px] items-center justify-between px-5 lg:px-8">
+          <div className="flex min-w-0 items-center gap-4">
+            <Link
+              href={`/deals/${encodeURIComponent(dealId)}`}
+              className="result-icon-button"
+              aria-label="Back to deal"
+            >
+              <ArrowLeft size={15} />
+            </Link>
+
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <p className="dealer-kicker text-[#60A5FA]">
+                  DEALER / RESULT
+                </p>
+
+                {terminal && (
+                  <span className="result-live-dot" />
+                )}
+              </div>
+
+              <p className="dealer-mono mt-1 truncate text-[9px] text-[#52525B]">
+                {session.id}
+              </p>
+            </div>
+          </div>
+
+          <Link
+            href="/deals/create"
+            className="dealer-result-button hidden items-center gap-2 rounded-xl px-4 py-3 text-[9px] font-black tracking-[0.12em] sm:flex"
+          >
+            CREATE ANOTHER DEAL
+            <ArrowRight size={13} />
+          </Link>
+        </div>
+      </header>
+
+      <section className="relative z-10 mx-auto max-w-[1500px] px-5 pb-20 pt-10 lg:px-8 lg:pt-14">
+        {/* HERO */}
+        <div className="grid gap-6 lg:grid-cols-[1fr_0.72fr] lg:items-stretch">
+          <section className="result-hero-panel relative overflow-hidden rounded-[32px] p-7 sm:p-10">
+            <div className="result-hero-scan" />
+
+            <div className="relative z-10">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="result-status-pill">
+                  <span className="result-status-dot" />
+                  {session.state}
+                </span>
+
+                <span className="result-round-pill">
+                  ROUND {session.currentRound}
+                </span>
+
+                {offers.length > 0 && (
+                  <span className="result-round-pill">
+                    {offers.length} OFFERS
+                  </span>
+                )}
+              </div>
+
+              <p className="dealer-kicker mt-10 text-[#8B5CF6]">
+                NEGOTIATION COMPLETE
+              </p>
+
+              <h1 className="mt-4 max-w-4xl text-5xl font-semibold leading-[0.94] tracking-[-0.06em] sm:text-7xl lg:text-[82px]">
+                The deal
+                <br />
+                <span className="result-gradient">
+                  was negotiated.
+                </span>
+              </h1>
+
+              <p className="mt-7 max-w-xl text-sm leading-7 text-[#8A8F9B]">
+                DEALER recorded the negotiation, validated the
+                offers, enforced the business policy, and persisted
+                the final authoritative value.
+              </p>
+
+              <div className="mt-9 flex flex-wrap items-center gap-3">
+                <div className="result-architecture-chip">
+                  <ShieldCheck
+                    size={13}
+                    className="text-[#22C55E]"
+                  />
+                  DETERMINISTIC CONTROL
+                </div>
+
+                <div className="result-architecture-chip">
+                  <Sparkles
+                    size={13}
+                    className="text-[#A78BFA]"
+                  />
+                  AI-ASSISTED NEGOTIATION
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* FINAL VALUE */}
+          <section className="result-final-card relative overflow-hidden rounded-[32px] p-7 sm:p-9">
+            <div className="result-final-glow" />
+
+            <div className="relative z-10 flex h-full flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <p className="dealer-kicker text-[#60A5FA]">
+                    FINAL AUTHORITATIVE VALUE
+                  </p>
+
+                  <div className="result-check">
+                    <CheckCircle2 size={15} />
+                  </div>
+                </div>
+
+                <p className="dealer-mono mt-5 text-5xl font-semibold tracking-[-0.06em] text-white sm:text-6xl lg:text-[68px]">
+                  {money(finalPrice)}
+                </p>
+
+                <div className="mt-4 h-px bg-white/[0.07]" />
+
+                <div className="mt-5 grid grid-cols-2 gap-5">
+                  <div>
+                    <p className="dealer-kicker text-[#52525B]">
+                      STARTING PRICE
+                    </p>
+
+                    <p className="dealer-mono mt-2 text-sm text-[#71717A]">
+                      {money(startingPrice)}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="dealer-kicker text-[#22C55E]">
+                      BUYER SAVING
+                    </p>
+
+                    <p className="dealer-mono mt-2 text-lg font-semibold text-[#22C55E]">
+                      {money(savings)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-10 rounded-2xl border border-[#22C55E]/10 bg-[#22C55E]/[0.035] p-4">
+                <div className="flex items-center justify-between">
+                  <span className="dealer-kicker text-[#52525B]">
+                    EFFECTIVE DISCOUNT
+                  </span>
+
+                  <span className="dealer-mono text-xl font-semibold text-[#22C55E]">
+                    {savingsPercent.toFixed(1)}%
+                  </span>
+                </div>
+
+                <div className="mt-3 h-1 overflow-hidden rounded-full bg-white/[0.05]">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-[#22C55E] to-[#60A5FA]"
+                    style={{
+                      width: `${Math.min(
+                        100,
+                        Math.max(0, savingsPercent)
+                      )}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        {/* METRICS */}
+        <section className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Metric
+            icon={<CircleDollarSign size={15} />}
+            label="STARTING PRICE"
+            value={money(startingPrice)}
+          />
+
+          <Metric
+            icon={<Trophy size={15} />}
+            label="FINAL PRICE"
+            value={money(finalPrice)}
+            emphasis
+          />
+
+          <Metric
+            icon={<TrendingDown size={15} />}
+            label="TOTAL SAVING"
+            value={`${money(savings)} Â· ${savingsPercent.toFixed(1)}%`}
+            success={savings > 0}
+          />
+
+          <Metric
+            icon={<BarChart3 size={15} />}
+            label="OFFERS / ROUNDS"
+            value={`${offers.length} / ${session.currentRound}`}
+          />
+        </section>
+
+        {/* TRAJECTORY + AUDIT */}
+        <section className="mt-5 grid gap-5 lg:grid-cols-[1.35fr_0.65fr]">
+          <Trajectory
+            trajectory={trajectory}
+            min={trajectoryBounds.min}
+            max={trajectoryBounds.max}
+          />
+
+          <section className="dealer-panel rounded-[28px] p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="dealer-kicker text-[#A78BFA]">
+                  DEAL AUDIT
+                </p>
+
+                <h2 className="mt-2 text-lg font-semibold">
+                  Control layer
+                </h2>
+              </div>
+
+              <div className="result-audit-icon">
+                <ShieldCheck size={16} />
+              </div>
+            </div>
+
+            <div className="mt-7 space-y-4">
+              <AuditStat
+                label="Final deal state"
+                value={session.state}
+              />
+
+              <AuditStat
+                label="Buyer agent offers"
+                value={String(buyerOffers.length)}
+              />
+
+              <AuditStat
+                label="Merchant agent offers"
+                value={String(merchantOffers.length)}
+              />
+
+              <AuditStat
+                label="Control events"
+                value={String(audit.length)}
+              />
+
+              <AuditStat
+                label="Maximum rounds"
+                value={String(session.maxRounds)}
+              />
+            </div>
+
+            <div className="mt-7 rounded-2xl border border-[#60A5FA]/10 bg-[#60A5FA]/[0.025] p-4">
+              <div className="flex items-start gap-3">
+                <ShieldCheck
+                  size={15}
+                  className="mt-0.5 shrink-0 text-[#60A5FA]"
+                />
+
+                <div>
+                  <p className="dealer-kicker text-[#60A5FA]">
+                    GOVERNANCE CONFIRMED
+                  </p>
+
+                  <p className="mt-2 text-[10px] leading-5 text-[#71717A]">
+                    AI proposals were processed through DEALER's
+                    deterministic control layer. AI did not directly
+                    execute payment.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        {/* AGENT SUMMARY */}
+        <section className="mt-5 grid gap-5 md:grid-cols-2">
+          <AgentSummary
+            type="BUYER"
+            count={buyerOffers.length}
+            latest={
+              buyerOffers[buyerOffers.length - 1]?.price
+            }
+          />
+
+          <AgentSummary
+            type="MERCHANT"
+            count={merchantOffers.length}
+            latest={
+              merchantOffers[merchantOffers.length - 1]?.price
+            }
+          />
+        </section>
+
+        {/* HISTORY */}
+        <section className="dealer-panel mt-5 overflow-hidden rounded-[28px]">
+          <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-5 sm:px-6">
+            <div>
+              <p className="dealer-kicker text-[#60A5FA]">
+                DEAL HISTORY
+              </p>
+
+              <h2 className="mt-2 text-lg font-semibold">
+                Previous negotiations
+              </h2>
+            </div>
+
+            <span className="dealer-mono text-[9px] text-[#52525B]">
+              {history.length} DEALS
+            </span>
+          </div>
+
+          {history.length === 0 ? (
+            <div className="px-6 py-10 text-center text-xs text-[#52525B]">
+              No previous negotiations recorded.
+            </div>
+          ) : (
+            <div className="divide-y divide-white/[0.045]">
+              {history.slice(0, 8).map((deal) => {
+                const dealFinal =
+                  deal.acceptedPrice ??
+                  deal.currentPrice ??
+                  deal.initialPrice;
+
+                const dealSaving = Math.max(
+                  0,
+                  deal.initialPrice - dealFinal
+                );
+
+                const isCurrent =
+                  deal.id === session.id;
+
+                return (
+                  <Link
+                    key={deal.id}
+                    href={
+                      isCurrent
+                        ? `/deals/${encodeURIComponent(
+                            deal.id
+                          )}/result`
+                        : `/deals/${encodeURIComponent(
+                            deal.id
+                          )}`
+                    }
+                    className={`result-history-row ${
+                      isCurrent
+                        ? "bg-white/[0.025]"
+                        : ""
+                    }`}
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="result-history-icon">
+                        {isCurrent ? (
+                          <Trophy
+                            size={13}
+                            className="text-[#60A5FA]"
+                          />
+                        ) : (
+                          <Clock3
+                            size={13}
+                            className="text-[#52525B]"
+                          />
+                        )}
+                      </div>
+
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="dealer-kicker text-[#71717A]">
+                            {deal.state}
+                          </p>
+
+                          {isCurrent && (
+                            <span className="dealer-kicker text-[#60A5FA]">
+                              CURRENT
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="dealer-mono mt-1 truncate text-[9px] text-[#52525B]">
+                          {deal.id}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-5 sm:gap-8">
+                      <div>
+                        <p className="dealer-kicker text-[#52525B]">
+                          FINAL
+                        </p>
+
+                        <p className="dealer-mono mt-1 text-sm text-[#A1A1AA]">
+                          {money(dealFinal)}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="dealer-kicker text-[#52525B]">
+                          SAVING
+                        </p>
+
+                        <p className="dealer-mono mt-1 text-sm text-[#22C55E]">
+                          {money(dealSaving)}
+                        </p>
+                      </div>
+
+                      <ArrowRight
+                        size={14}
+                        className="text-[#3F3F46]"
+                      />
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* CTA */}
+        <section className="mt-8 grid gap-3 sm:grid-cols-2">
+          <Link
+            href="/deals/create"
+            className="dealer-result-button flex items-center justify-center gap-2 rounded-2xl px-5 py-5 text-[10px] font-black tracking-[0.14em]"
+          >
+            <Sparkles size={14} />
+            START NEW NEGOTIATION
+          </Link>
+
+          <Link
+            href="/"
+            className="flex items-center justify-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.025] px-5 py-5 text-[10px] font-black tracking-[0.14em] text-[#A1A1AA] transition hover:border-white/[0.14] hover:bg-white/[0.04] hover:text-white"
+          >
+            BACK TO DEALER
+          </Link>
+        </section>
+
+        <footer className="mt-12 border-t border-white/[0.05] pt-6 text-center">
+          <p className="dealer-kicker text-[#3F3F46]">
+            AI PROPOSES Â· POLICY VALIDATES Â· STATE MACHINE CONTROLS Â·
+            PAYMENT SERVICE EXECUTES
+          </p>
+        </footer>
+      </section>
+
+      <ResultStyles />
+    </main>
+  );
+}
+
+function Metric({
+  icon,
+  label,
+  value,
+  emphasis = false,
+  success = false,
+}: {
+  icon: ReactNode;
+  label: string;
+  value: string;
+  emphasis?: boolean;
+  success?: boolean;
+}) {
+  return (
+    <div
+      className={`dealer-panel rounded-2xl p-4 ${
+        emphasis
+          ? "border-[#60A5FA]/15"
+          : ""
+      }`}
+    >
+      <div className="flex items-center gap-2 text-[#52525B]">
+        {icon}
+
+        <span className="dealer-kicker">
+          {label}
+        </span>
+      </div>
+
+      <p
+        className={`dealer-mono mt-3 text-sm ${
+          success
+            ? "text-[#22C55E]"
+            : emphasis
+              ? "text-white"
+              : "text-[#D4D4D8]"
+        }`}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function AuditStat({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex items-center justify-between border-b border-white/[0.045] pb-3 last:border-0 last:pb-0">
+      <span className="text-xs text-[#71717A]">
+        {label}
+      </span>
+
+      <span className="dealer-mono text-[10px] text-[#D4D4D8]">
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function AgentSummary({
+  type,
+  count,
+  latest,
+}: {
+  type: "BUYER" | "MERCHANT";
+  count: number;
+  latest?: number;
+}) {
+  const buyer = type === "BUYER";
+
+  return (
+    <section className="dealer-panel rounded-[26px] p-5 sm:p-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div
+            className={`result-agent-icon ${
+              buyer
+                ? "result-agent-icon-buyer"
+                : "result-agent-icon-merchant"
+            }`}
+          >
+            <span />
+          </div>
+
+          <div>
+            <p
+              className={`dealer-kicker ${
+                buyer
+                  ? "text-[#60A5FA]"
+                  : "text-[#A78BFA]"
+              }`}
+            >
+              {buyer
+                ? "BUYER AGENT"
+                : "MERCHANT AGENT"}
+            </p>
+
+            <p className="mt-1 text-sm font-semibold">
+              Negotiation activity
+            </p>
+          </div>
+        </div>
+
+        <span className="dealer-mono text-[9px] text-[#52525B]">
+          {count} OFFERS
+        </span>
+      </div>
+
+      <div className="mt-6 flex items-end justify-between">
+        <div>
+          <p className="dealer-kicker text-[#52525B]">
+            LATEST PROPOSAL
+          </p>
+
+          <p className="dealer-mono mt-2 text-2xl font-semibold text-[#D4D4D8]">
+            {latest !== undefined
+              ? money(latest)
+              : "â€”"}
+          </p>
+        </div>
+
+        <p className="dealer-kicker text-[#3F3F46]">
+          GEMINI
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function Trajectory({
+  trajectory,
+  min,
+  max,
+}: {
+  trajectory: Array<{
+    label: string;
+    price: number;
+    round: number;
+    actor: string;
+  }>;
+  min: number;
+  max: number;
+}) {
+  const range = Math.max(1, max - min);
+
+  return (
+    <section className="dealer-panel rounded-[28px] p-5 sm:p-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="dealer-kicker text-[#60A5FA]">
+            NEGOTIATION TRAJECTORY
+          </p>
+
+          <h2 className="mt-2 text-lg font-semibold">
+            Actual offer movement
+          </h2>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <Legend
+            label="BUYER"
+            className="text-[#60A5FA]"
+          />
+
+          <Legend
+            label="MERCHANT"
+            className="text-[#A78BFA]"
+          />
+
+          <Legend
+            label="START"
+            className="text-[#71717A]"
+          />
+        </div>
+      </div>
+
+      {trajectory.length < 2 ? (
+        <div className="flex h-[300px] items-center justify-center rounded-2xl border border-white/[0.05] bg-black/20">
+          <div className="text-center">
+            <BarChart3
+              size={20}
+              className="mx-auto text-[#3F3F46]"
+            />
+
+            <p className="mt-3 text-xs text-[#52525B]">
+              Not enough offers to plot a trajectory yet.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="mt-7 overflow-x-auto">
+          <div
+            className="relative min-w-[620px] rounded-2xl border border-white/[0.05] bg-black/20 px-5 py-6"
+            style={{ height: 330 }}
+          >
+            <div className="absolute inset-x-6 top-[25%] border-t border-dashed border-white/[0.045]" />
+            <div className="absolute inset-x-6 top-[50%] border-t border-dashed border-white/[0.045]" />
+            <div className="absolute inset-x-6 top-[75%] border-t border-dashed border-white/[0.045]" />
+
+            <div className="absolute left-3 top-4 dealer-kicker text-[#3F3F46]">
+              HIGH
+            </div>
+
+            <div className="absolute bottom-4 left-3 dealer-kicker text-[#3F3F46]">
+              LOW
+            </div>
+
+            <div className="flex h-full items-end gap-3 pl-8">
+              {trajectory.map((point, index) => {
+                const normalized =
+                  (point.price - min) / range;
+
+                const height =
+                  18 + normalized * 67;
+
+                const isBuyer =
+                  point.label === "BUYER";
+
+                const isMerchant =
+                  point.label === "MERCHANT";
+
+                return (
+                  <div
+                    key={`${point.round}-${index}`}
+                    className="group flex h-full min-w-[48px] flex-1 flex-col justify-end"
+                  >
+                    <div className="mb-2 text-center opacity-80 transition group-hover:opacity-100">
+                      <p className="dealer-mono text-[8px] text-[#A1A1AA]">
+                        {money(point.price)}
+                      </p>
+                    </div>
+
+                    <div className="flex h-[205px] items-end justify-center">
+                      <div
+                        className={`result-trajectory-bar ${
+                          isBuyer
+                            ? "result-bar-buyer"
+                            : isMerchant
+                              ? "result-bar-merchant"
+                              : "result-bar-start"
+                        }`}
+                        style={{
+                          height: `${height}%`,
+                        }}
+                        title={`${point.label} Â· ${money(
+                          point.price
+                        )}`}
+                      >
+                        <div className="result-bar-highlight" />
+                      </div>
+                    </div>
+
+                    <p
+                      className={`dealer-kicker mt-3 truncate text-center ${
+                        isBuyer
+                          ? "text-[#60A5FA]"
+                          : isMerchant
+                            ? "text-[#A78BFA]"
+                            : "text-[#52525B]"
+                      }`}
+                    >
+                      {point.label} Â· R{point.round}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function Legend({
+  label,
+  className,
+}: {
+  label: string;
+  className: string;
+}) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <span
+        className={`h-1.5 w-1.5 rounded-full bg-current ${className}`}
+      />
+
+      <span
+        className={`dealer-kicker ${className}`}
+      >
+        {label}
+      </span>
+    </div>
+  );
+}
+
+function ResultStyles() {
+  return (
+    <style jsx global>{`
+      .dealer-result {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .dealer-mono {
+        font-family:
+          "SFMono-Regular",
+          Consolas,
+          "Liberation Mono",
+          monospace;
+      }
+
+      .dealer-kicker {
+        font-size: 10px;
+        line-height: 1.15;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+      }
+
+      .dealer-panel {
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        background:
+          linear-gradient(
+            145deg,
+            rgba(18, 20, 29, 0.78),
+            rgba(8, 9, 14, 0.68)
+          );
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(24px);
+      }
+
+      .result-grid {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.18;
+        background-image:
+          linear-gradient(
+            rgba(255, 255, 255, 0.025) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.025) 1px,
+            transparent 1px
+          );
+        background-size: 64px 64px;
+        mask-image: linear-gradient(
+          to bottom,
+          black,
+          transparent 80%
+        );
+      }
+
+      .result-orb {
+        position: fixed;
+        width: 520px;
+        height: 520px;
+        border-radius: 50%;
+        filter: blur(110px);
+        pointer-events: none;
+        opacity: 0.12;
+      }
+
+      .result-orb-a {
+        left: -18%;
+        top: 8%;
+        background: #2563eb;
+      }
+
+      .result-orb-b {
+        right: -18%;
+        top: 42%;
+        background: #7c3aed;
+      }
+
+      .result-gradient {
+        background:
+          linear-gradient(
+            90deg,
+            #60a5fa,
+            #a78bfa,
+            #818cf8
+          );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .result-hero-panel {
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        background:
+          radial-gradient(
+            circle at 82% 12%,
+            rgba(96, 165, 250, 0.08),
+            transparent 32%
+          ),
+          radial-gradient(
+            circle at 22% 88%,
+            rgba(124, 58, 237, 0.08),
+            transparent 30%
+          ),
+          linear-gradient(
+            145deg,
+            rgba(15, 18, 29, 0.88),
+            rgba(6, 8, 14, 0.76)
+          );
+        box-shadow:
+          0 40px 120px rgba(0, 0, 0, 0.28),
+          inset 0 1px 0 rgba(255, 255, 255, 0.025);
+        backdrop-filter: blur(28px);
+      }
+
+      .result-hero-scan {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(96, 165, 250, 0.65),
+          rgba(167, 139, 250, 0.55),
+          transparent
+        );
+        opacity: 0.7;
+      }
+
+      .result-final-card {
+        min-height: 390px;
+        border: 1px solid rgba(96, 165, 250, 0.16);
+        background:
+          radial-gradient(
+            circle at 75% 15%,
+            rgba(124, 58, 237, 0.14),
+            transparent 35%
+          ),
+          radial-gradient(
+            circle at 15% 90%,
+            rgba(37, 99, 235, 0.08),
+            transparent 32%
+          ),
+          linear-gradient(
+            145deg,
+            rgba(17, 22, 38, 0.94),
+            rgba(6, 8, 14, 0.9)
+          );
+        box-shadow:
+          0 40px 120px rgba(37, 99, 235, 0.09),
+          inset 0 1px 0 rgba(255, 255, 255, 0.035);
+        backdrop-filter: blur(30px);
+      }
+
+      .result-final-glow {
+        position: absolute;
+        right: -120px;
+        top: -120px;
+        width: 320px;
+        height: 320px;
+        border-radius: 50%;
+        background: rgba(96, 165, 250, 0.08);
+        filter: blur(60px);
+        pointer-events: none;
+      }
+
+      .result-check {
+        display: flex;
+        height: 30px;
+        width: 30px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        border: 1px solid rgba(34, 197, 94, 0.16);
+        background: rgba(34, 197, 94, 0.05);
+        color: #22c55e;
+      }
+
+      .result-status-pill,
+      .result-round-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border-radius: 999px;
+        padding: 8px 11px;
+        font-size: 8px;
+        line-height: 1;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+      }
+
+      .result-status-pill {
+        border: 1px solid rgba(34, 197, 94, 0.18);
+        background: rgba(34, 197, 94, 0.045);
+        color: #22c55e;
+      }
+
+      .result-round-pill {
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        background: rgba(255, 255, 255, 0.025);
+        color: #71717a;
+      }
+
+      .result-status-dot,
+      .result-live-dot {
+        display: inline-block;
+        height: 5px;
+        width: 5px;
+        border-radius: 50%;
+        background: #22c55e;
+        box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+      }
+
+      .result-live-dot {
+        animation: resultPulse 1.8s ease-in-out infinite;
+      }
+
+      .result-architecture-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.018);
+        padding: 8px 10px;
+        font-size: 8px;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        color: #52525b;
+      }
+
+      .result-audit-icon {
+        display: flex;
+        height: 34px;
+        width: 34px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        border: 1px solid rgba(167, 139, 250, 0.12);
+        background: rgba(124, 58, 237, 0.045);
+        color: #a78bfa;
+      }
+
+      .result-trajectory-bar {
+        position: relative;
+        width: 100%;
+        max-width: 54px;
+        min-height: 20px;
+        overflow: hidden;
+        border-radius: 12px 12px 4px 4px;
+        transition:
+          transform 0.25s ease,
+          filter 0.25s ease;
+      }
+
+      .result-trajectory-bar:hover {
+        transform: translateY(-4px);
+        filter: brightness(1.2);
+      }
+
+      .result-bar-buyer {
+        background:
+          linear-gradient(
+            180deg,
+            rgba(96, 165, 250, 0.95),
+            rgba(37, 99, 235, 0.65)
+          );
+        box-shadow:
+          0 0 30px rgba(37, 99, 235, 0.12),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      }
+
+      .result-bar-merchant {
+        background:
+          linear-gradient(
+            180deg,
+            rgba(167, 139, 250, 0.95),
+            rgba(124, 58, 237, 0.65)
+          );
+        box-shadow:
+          0 0 30px rgba(124, 58, 237, 0.12),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      }
+
+      .result-bar-start {
+        background:
+          linear-gradient(
+            180deg,
+            rgba(113, 113, 122, 0.7),
+            rgba(63, 63, 70, 0.6)
+          );
+      }
+
+      .result-bar-highlight {
+        position: absolute;
+        inset: 0 0 auto;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.22);
+      }
+
+      .result-agent-icon {
+        display: flex;
+        height: 38px;
+        width: 38px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 13px;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        background: rgba(255, 255, 255, 0.025);
+      }
+
+      .result-agent-icon span {
+        height: 10px;
+        width: 10px;
+        border-radius: 50%;
+      }
+
+      .result-agent-icon-buyer span {
+        background: #60a5fa;
+        box-shadow: 0 0 18px rgba(96, 165, 250, 0.65);
+      }
+
+      .result-agent-icon-merchant span {
+        background: #a78bfa;
+        box-shadow: 0 0 18px rgba(167, 139, 250, 0.65);
+      }
+
+      .result-history-row {
+        display: flex;
+        min-height: 74px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 15px 20px;
+        transition:
+          background 0.2s ease,
+          padding 0.2s ease;
+      }
+
+      .result-history-row:hover {
+        background: rgba(255, 255, 255, 0.025);
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+
+      .result-history-icon {
+        display: flex;
+        height: 36px;
+        width: 36px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .result-icon-button {
+        display: flex;
+        height: 38px;
+        width: 38px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.025);
+        color: #a1a1aa;
+        transition:
+          color 0.2s ease,
+          border-color 0.2s ease,
+          background 0.2s ease;
+      }
+
+      .result-icon-button:hover {
+        border-color: rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.045);
+        color: white;
+      }
+
+      .dealer-result-button {
+        background:
+          linear-gradient(
+            100deg,
+            #2563eb,
+            #7c3aed,
+            #2563eb
+          );
+        background-size: 200% 100%;
+        color: white;
+        box-shadow: 0 15px 55px rgba(37, 99, 235, 0.16);
+        transition:
+          background-position 0.45s ease,
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .dealer-result-button:hover {
+        background-position: 100% 0;
+        transform: translateY(-1px);
+        box-shadow: 0 18px 65px rgba(37, 99, 235, 0.22);
+      }
+
+      .result-loading-orb {
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.15;
+      }
+
+      .result-loading-orb-a {
+        left: 20%;
+        top: 25%;
+        background: #2563eb;
+      }
+
+      .result-loading-orb-b {
+        right: 20%;
+        bottom: 20%;
+        background: #7c3aed;
+      }
+
+      .result-loader {
+        position: relative;
+        display: flex;
+        height: 46px;
+        width: 46px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 1px solid rgba(96, 165, 250, 0.2);
+        animation: resultLoaderSpin 2s linear infinite;
+      }
+
+      .result-loader::before {
+        position: absolute;
+        inset: 5px;
+        content: "";
+        border-radius: 50%;
+        border: 1px solid rgba(167, 139, 250, 0.18);
+      }
+
+      .result-loader-core {
+        height: 8px;
+        width: 8px;
+        border-radius: 50%;
+        background: #60a5fa;
+        box-shadow:
+          0 0 18px rgba(96, 165, 250, 0.8),
+          0 0 35px rgba(124, 58, 237, 0.3);
+      }
+
+      @keyframes resultLoaderSpin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes resultPulse {
+        0%,
+        100% {
+          opacity: 0.45;
+          transform: scale(0.8);
+        }
+
+        50% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .result-history-row {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .result-history-row > div:last-child {
+          width: 100%;
+          justify-content: space-between;
+        }
+      }
+    `}</style>
+  );
+}
